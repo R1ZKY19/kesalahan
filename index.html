@@ -13,292 +13,285 @@
     .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
 
-  <div class="max-w-7xl mx-auto space-y-6">
+  <div class="flex flex-col md:flex-row min-h-screen">
     
-    <!-- HEADER & FILTERS -->
-    <header class="glass p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <div class="flex items-center gap-3">
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-            STAFF MONITORING DASHBOARD
-          </h1>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-            Sheet: KESALAHAN
-          </span>
-        </div>
-        <p class="text-xs text-slate-400 mt-1">Real-time sync data dari Google Sheets Master</p>
-      </div>
-
-      <!-- FILTER CONTROLS -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-        <!-- Search Input -->
-        <div class="relative">
-          <input type="text" id="searchInput" oninput="updateDashboard()" placeholder="Cari nama staff / keterangan..." 
-            class="w-full sm:w-64 bg-slate-900 text-slate-200 placeholder-slate-500 text-sm px-4 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-indigo-500 transition">
-        </div>
-
-        <!-- Brand Dropdown -->
-        <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-          <label for="brandSelect" class="text-xs font-medium text-slate-400 whitespace-nowrap">Brand:</label>
-          <select id="brandSelect" onchange="updateDashboard()" class="bg-transparent text-sm font-semibold text-indigo-400 focus:outline-none cursor-pointer py-1">
-            <option value="ALL" class="bg-slate-900 text-slate-200">SEMUA BRAND</option>
-          </select>
-        </div>
-      </div>
-    </header>
-
-    <!-- STAT CARDS -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="glass p-5 rounded-2xl border border-slate-800/80">
-        <p class="text-xs font-medium text-slate-400">Total Kesalahan</p>
-        <p id="statTotal" class="text-2xl font-bold text-indigo-400 mt-1">0</p>
-      </div>
-      <div class="glass p-5 rounded-2xl border border-slate-800/80">
-        <p class="text-xs font-medium text-slate-400">Total Staff Terlibat</p>
-        <p id="statStaffCount" class="text-2xl font-bold text-cyan-400 mt-1">0</p>
-      </div>
-      <div class="glass p-5 rounded-2xl border border-slate-800/80">
-        <p class="text-xs font-medium text-slate-400">Paling Banyak Kesalahan</p>
-        <p id="statTopStaff" class="text-base font-semibold text-rose-400 mt-1 truncate">-</p>
-      </div>
-      <div class="glass p-5 rounded-2xl border border-slate-800/80">
-        <p class="text-xs font-medium text-slate-400">Brand Aktif</p>
-        <p id="statActiveBrand" class="text-base font-semibold text-emerald-400 mt-1 truncate">ALL</p>
-      </div>
-    </div>
-
-    <!-- MAIN CONTENT GRID -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- LOG DETAIL TABLE (2 COLUMNS) -->
-      <div class="lg:col-span-2 glass p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-            Detail Log Kesalahan
-          </h2>
-          <span id="recordCount" class="text-xs font-medium text-slate-400">0 Data Ditampilkan</span>
-        </div>
-
-        <div class="overflow-x-auto max-h-[550px] overflow-y-auto rounded-xl border border-slate-800">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead class="sticky top-0 bg-slate-900/95 backdrop-blur-md text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
-              <tr>
-                <th class="p-3">Nama Staff</th>
-                <th class="p-3">Tanggal</th>
-                <th class="p-3">Keterangan</th>
-                <th class="p-3">Kode ID</th>
-                <th class="p-3 text-center">Bukti</th>
-              </tr>
-            </thead>
-            <tbody id="detailTable" class="divide-y divide-slate-800/60 text-slate-300">
-              <tr>
-                <td colspan="5" class="p-8 text-center text-slate-500">Memuat data dari Google Sheets...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SIDEBAR SUMMARY & RANKING (1 COLUMN) -->
+    <!-- SIDEBAR TOMBOL SITUS (SEBELAH KIRI) -->
+    <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0">
       <div class="space-y-6">
+        <!-- BRAND/LOGO TITLE -->
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+            <h1 class="text-lg font-bold text-slate-100 tracking-wide">MONITORING STAFF</h1>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Sheet Master: <span class="text-emerald-400 font-medium">KESALAHAN</span></p>
+        </div>
+
+        <!-- LIST TOMBOL SITUS -->
+        <div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PILIH SITUS / BRAND</p>
+          <div id="siteButtons" class="space-y-2">
+            <button class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+              PULITOTO
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-[11px] text-slate-500 text-center">
+        Sync Otomatis Google Sheets
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-4 md:p-8 space-y-6 overflow-x-hidden">
+      
+      <!-- TOP BAR & SEARCH -->
+      <header class="glass p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 id="currentSiteTitle" class="text-xl font-bold text-blue-400">PULITOTO</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Daftar Rekap & Log Kesalahan Staff</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="w-full sm:w-72">
+          <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff / keterangan / ID..." 
+            class="w-full bg-slate-900 text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500 transition">
+        </div>
+      </header>
+
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass p-4 rounded-2xl border border-slate-800">
+          <p class="text-xs text-slate-400 font-medium">Total Kesalahan</p>
+          <p id="statTotal" class="text-2xl font-bold text-blue-400 mt-1">0</p>
+        </div>
+        <div class="glass p-4 rounded-2xl border border-slate-800">
+          <p class="text-xs text-slate-400 font-medium">Jumlah Staff Terlibat</p>
+          <p id="statStaffCount" class="text-2xl font-bold text-cyan-400 mt-1">0</p>
+        </div>
+        <div class="glass p-4 rounded-2xl border border-slate-800">
+          <p class="text-xs text-slate-400 font-medium">Kesalahan Terbanyak</p>
+          <p id="statTopStaff" class="text-sm font-semibold text-rose-400 mt-1 truncate">-</p>
+        </div>
+      </div>
+
+      <!-- TABLES GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- RANKING / LEADERBOARD -->
-        <div class="glass p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
-          <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            Ranking Kesalahan Staff
-          </h2>
-          <div class="overflow-hidden rounded-xl border border-slate-800">
+        <!-- LOG DETAIL TABLE (LEFT - 2 COLS) -->
+        <div class="lg:col-span-2 glass p-5 rounded-2xl border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-slate-200">DETAIL LOG KESALAHAN</h3>
+            <span id="recordCount" class="text-xs text-slate-400">0 Data</span>
+          </div>
+
+          <div class="overflow-x-auto max-h-[500px] overflow-y-auto rounded-xl border border-slate-800">
             <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-slate-900/95 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+              <thead class="sticky top-0 bg-slate-900 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                 <tr>
-                  <th class="p-3 text-center w-12">Rank</th>
                   <th class="p-3">Nama Staff</th>
-                  <th class="p-3 text-center w-20">Total</th>
+                  <th class="p-3">Tanggal</th>
+                  <th class="p-3">Keterangan</th>
+                  <th class="p-3">Kode ID</th>
+                  <th class="p-3 text-center">Bukti</th>
                 </tr>
               </thead>
-              <tbody id="rankTable" class="divide-y divide-slate-800/60 text-slate-300">
-                <tr>
-                  <td colspan="3" class="p-4 text-center text-slate-500">Memuat ranking...</td>
-                </tr>
+              <tbody id="detailTable" class="divide-y divide-slate-800/60 text-slate-300">
+                <tr><td colspan="5" class="p-6 text-center text-slate-500">Memuat data dari Google Sheets...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- REKAP KESALAHAN -->
-        <div class="glass p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
-          <h2 class="text-base font-bold text-slate-200 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-            Rekap Kesalahan Staff
-          </h2>
-          <div id="summaryList" class="space-y-3 max-h-[250px] overflow-y-auto pr-1">
-            <p class="text-xs text-slate-500 text-center py-4">Memuat rekap...</p>
+        <!-- RANKING & SUMMARY (RIGHT - 1 COL) -->
+        <div class="space-y-6">
+          
+          <!-- RANKING TABLE -->
+          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-slate-200">RANKING KESALAHAN</h3>
+            <div class="overflow-hidden rounded-xl border border-slate-800">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                  <tr>
+                    <th class="p-2.5 text-center w-10">Rank</th>
+                    <th class="p-2.5">Nama Staff</th>
+                    <th class="p-2.5 text-center w-16">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="rankTable" class="divide-y divide-slate-800/60 text-slate-300">
+                  <tr><td colspan="3" class="p-4 text-center text-slate-500">Memuat ranking...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          <!-- REKAP KESALAHAN -->
+          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-3">
+            <h3 class="text-sm font-bold text-slate-200">REKAP TOTAL STAFF</h3>
+            <div id="summaryList" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+              <p class="text-xs text-slate-500 text-center py-4">Memuat rekap...</p>
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-    </div>
+    </main>
 
   </div>
 
   <script>
-    // GOOGLE APPS SCRIPT URL ANDA
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQR4U1rNPfrJ2UxRyieZONa2XRZMIwiVm1jbj3JWO_CnYu_dhX7v03zU6Bby-ZNkrJ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyuOzFH0rjsfQOuRnDCBINn4DDJrsvVKM8rMkVqKO4HIzELpcppv_WJPapqHIlBppK/exec";
 
-    let rawData = [];
-
-    // Helper untuk mengambil nilai kolom dengan berbagai variasi penulisan header
-    function getVal(row, keys) {
-      for (let k of keys) {
-        for (let rowKey in row) {
-          if (rowKey.trim().toLowerCase() === k.toLowerCase()) {
-            return row[rowKey];
-          }
-        }
-      }
-      return "";
-    }
+    let allData = [];
+    let currentSite = "PULITOTO";
 
     async function loadData() {
       try {
         const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
-        
-        if (data.error) {
-          alert("Error: " + data.error);
+        const result = await response.json();
+
+        if (result.error) {
+          alert("Error: " + result.error);
           return;
         }
 
-        rawData = data;
-        populateDropdown();
-        updateDashboard();
-      } catch (error) {
-        console.error("Gagal mengambil data:", error);
+        allData = result.data || [];
+        currentSite = result.currentSite || "PULITOTO";
+
+        renderSiteButtons(result.sites || [currentSite]);
+        filterData();
+      } catch (err) {
+        console.error("Gagal mengambil data:", err);
         document.getElementById("detailTable").innerHTML = `
-          <tr><td colspan="5" class="p-8 text-center text-rose-400 font-medium">Gagal memuat data dari Google Sheets. Pastikan skrip sudah dideploy dengan benar.</td></tr>
+          <tr><td colspan="5" class="p-6 text-center text-rose-400">Gagal terhubung ke Google Sheets.</td></tr>
         `;
       }
     }
 
-    function populateDropdown() {
-      const select = document.getElementById("brandSelect");
-      // Cari nama brand dari kolom BRAND atau NAMA BRAND atau dari kolom terpisah
-      const brands = [...new Set(rawData.map(row => getVal(row, ["Brand", "Nama Brand", "NAMA BRAND"])).filter(Boolean))];
-      
-      select.innerHTML = '<option value="ALL" class="bg-slate-900 text-slate-200">SEMUA BRAND</option>';
-      brands.forEach(b => {
-        const opt = document.createElement("option");
-        opt.value = b;
-        opt.textContent = b;
-        opt.className = "bg-slate-900 text-slate-200";
-        select.appendChild(opt);
-      });
+    function renderSiteButtons(sites) {
+      const container = document.getElementById("siteButtons");
+      container.innerHTML = sites.map(site => {
+        const isActive = site.toUpperCase() === currentSite.toUpperCase();
+        return `
+          <button onclick="selectSite('${site}')" 
+            class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold transition ${
+              isActive 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+            }">
+            ${site}
+          </button>
+        `;
+      }).join('');
     }
 
-    function updateDashboard() {
-      const selectedBrand = document.getElementById("brandSelect").value;
-      const searchKeyword = document.getElementById("searchInput").value.toLowerCase().trim();
-
-      // Filter berdasarkan Brand
-      let filtered = selectedBrand === "ALL" 
-        ? rawData 
-        : rawData.filter(row => getVal(row, ["Brand", "Nama Brand", "NAMA BRAND"]) === selectedBrand);
-
-      // Filter berdasarkan Kata Kunci Pencarian
-      if (searchKeyword) {
-        filtered = filtered.filter(row => {
-          const staff = String(getVal(row, ["Nama Staff", "NAMA STAFF", "Staff"])).toLowerCase();
-          const note = String(getVal(row, ["Keterangan", "KETERANGAN", "Note", "CATATAN"])).toLowerCase();
-          const kode = String(getVal(row, ["Kode ID", "KODE ID", "ID", "Kode"])).toLowerCase();
-          return staff.includes(searchKeyword) || note.includes(searchKeyword) || kode.includes(searchKeyword);
-        });
-      }
-
-      // Filter hanya data yang memiliki Nama Staff
-      const validFiltered = filtered.filter(row => getVal(row, ["Nama Staff", "NAMA STAFF", "Staff"]));
-
-      // 1. UPDATE STAT CARDS
-      document.getElementById("statTotal").textContent = validFiltered.length;
-      document.getElementById("recordCount").textContent = `${validFiltered.length} Data Ditampilkan`;
-      document.getElementById("statActiveBrand").textContent = selectedBrand;
-
-      const uniqueStaff = [...new Set(validFiltered.map(r => getVal(r, ["Nama Staff", "NAMA STAFF", "Staff"])))];
-      document.getElementById("statStaffCount").textContent = uniqueStaff.length;
-
-      // 2. HITUNG REKAP KESALAHAN PER STAFF
-      const staffCounts = {};
-      validFiltered.forEach(r => {
-        const name = getVal(r, ["Nama Staff", "NAMA STAFF", "Staff"]);
-        if (name) staffCounts[name] = (staffCounts[name] || 0) + 1;
+    function selectSite(siteName) {
+      currentSite = siteName;
+      document.getElementById("currentSiteTitle").textContent = siteName;
+      
+      // Update tampilan tombol aktif
+      const buttons = document.querySelectorAll("#siteButtons button");
+      buttons.forEach(btn => {
+        if (btn.textContent.trim().toUpperCase() === siteName.toUpperCase()) {
+          btn.className = "w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition";
+        } else {
+          btn.className = "w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800 transition";
+        }
       });
 
-      const rankedStaff = Object.entries(staffCounts).sort((a, b) => b - a);
-      document.getElementById("statTopStaff").textContent = rankedStaff.length > 0 ? `${rankedStaff[0][0]} (${rankedStaff[0]})` : "-";
+      filterData();
+    }
 
-      // 3. RENDER TABEL DETAIL
-      const detailTbody = document.getElementById("detailTable");
-      if (validFiltered.length === 0) {
-        detailTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">Tidak ada data kesalahan ditemukan.</td></tr>`;
-      } else {
-        detailTbody.innerHTML = validFiltered.map(row => {
-          const staff = getVal(row, ["Nama Staff", "NAMA STAFF", "Staff"]) || "-";
-          const tgl = getVal(row, ["Tanggal", "TANGGAL", "Date"]) || "-";
-          const ket = getVal(row, ["Keterangan", "KETERANGAN", "Note"]) || "-";
-          const kode = getVal(row, ["Kode ID", "KODE ID", "ID"]) || "-";
-          const link = getVal(row, ["Link/Bukti", "LINK/BUKTI", "Link", "LINK", "Bukti"]) || "#";
+    function filterData() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
 
-          return `
-            <tr class="hover:bg-slate-800/50 transition">
-              <td class="p-3 font-semibold text-slate-200">${staff}</td>
-              <td class="p-3 text-slate-400 whitespace-nowrap">${tgl}</td>
-              <td class="p-3 text-slate-300">${ket}</td>
-              <td class="p-3 text-indigo-400 font-mono text-[11px]">${kode}</td>
-              <td class="p-3 text-center">
-                ${link !== "#" && link !== "" 
-                  ? `<a href="${link}" target="_blank" class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition">Buka Bukti ↗</a>` 
-                  : `<span class="text-slate-600">-</span>`}
-              </td>
-            </tr>
-          `;
-        }).join('');
+      // Filter data sesuai situs aktif dan kata kunci pencarian
+      let filtered = allData;
+
+      if (keyword) {
+        filtered = filtered.filter(item => 
+          (item.namaStaff && item.namaStaff.toLowerCase().includes(keyword)) ||
+          (item.keterangan && item.keterangan.toLowerCase().includes(keyword)) ||
+          (item.kodeId && item.kodeId.toLowerCase().includes(keyword))
+        );
       }
 
-      // 4. RENDER TABEL RANKING
+      renderDashboard(filtered);
+    }
+
+    function renderDashboard(data) {
+      // 1. STATS
+      document.getElementById("statTotal").textContent = data.length;
+      document.getElementById("recordCount").textContent = `${data.length} Data`;
+
+      const staffCounts = {};
+      data.forEach(item => {
+        if (item.namaStaff) {
+          staffCounts[item.namaStaff] = (staffCounts[item.namaStaff] || 0) + 1;
+        }
+      });
+
+      const uniqueStaff = Object.keys(staffCounts);
+      document.getElementById("statStaffCount").textContent = uniqueStaff.length;
+
+      const ranked = Object.entries(staffCounts).sort((a, b) => b - a);
+      document.getElementById("statTopStaff").textContent = ranked.length > 0 ? `${ranked[0][0]} (${ranked[0]})` : "-";
+
+      // 2. TABEL DETAIL LOG
+      const detailTbody = document.getElementById("detailTable");
+      if (data.length === 0) {
+        detailTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Tidak ada data kesalahan.</td></tr>`;
+      } else {
+        detailTbody.innerHTML = data.map(row => `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3 font-semibold text-slate-200">${row.namaStaff || '-'}</td>
+            <td class="p-3 text-slate-400 whitespace-nowrap">${row.tanggal || '-'}</td>
+            <td class="p-3 text-slate-300">${row.keterangan || '-'}</td>
+            <td class="p-3 text-indigo-400 font-mono text-[11px]">${row.kodeId || '-'}</td>
+            <td class="p-3 text-center">
+              ${row.link && row.link !== '#' && row.link !== '' 
+                ? `<a href="${row.link}" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition">Bukti ↗</a>` 
+                : `<span class="text-slate-600">-</span>`}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // 3. TABEL RANKING
       const rankTbody = document.getElementById("rankTable");
-      if (rankedStaff.length === 0) {
+      if (ranked.length === 0) {
         rankTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Tidak ada ranking.</td></tr>`;
       } else {
-        rankTbody.innerHTML = rankedStaff.map(([staff, count], index) => {
-          let rankBadge = `<span class="text-slate-400 font-semibold">${index + 1}</span>`;
-          if (index === 0) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">1</span>`;
-          if (index === 1) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-300/20 text-slate-300 font-bold border border-slate-300/30">2</span>`;
-          if (index === 2) rankBadge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-700/20 text-amber-600 font-bold border border-amber-700/30">3</span>`;
+        rankTbody.innerHTML = ranked.map(([staff, count], idx) => {
+          let badge = `<span class="text-slate-400">${idx + 1}</span>`;
+          if (idx === 0) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">1</span>`;
+          if (idx === 1) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300/20 text-slate-300 font-bold border border-slate-300/30">2</span>`;
+          if (idx === 2) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-700/20 text-amber-600 font-bold border border-amber-700/30">3</span>`;
 
           return `
             <tr class="hover:bg-slate-800/40 transition">
-              <td class="p-3 text-center">${rankBadge}</td>
-              <td class="p-3 font-medium text-slate-200">${staff}</td>
-              <td class="p-3 text-center font-bold text-rose-400">${count}</td>
+              <td class="p-2.5 text-center">${badge}</td>
+              <td class="p-2.5 font-medium text-slate-200">${staff}</td>
+              <td class="p-2.5 text-center font-bold text-rose-400">${count}</td>
             </tr>
           `;
         }).join('');
       }
 
-      // 5. RENDER REKAP SUMMARY LIST WITH PROGRESS BARS
+      // 4. REKAP SUMMARY LIST
       const summaryList = document.getElementById("summaryList");
-      const maxCount = rankedStaff.length > 0 ? rankedStaff[0] : 1;
-      
-      if (rankedStaff.length === 0) {
+      const maxVal = ranked.length > 0 ? ranked[0] : 1;
+
+      if (ranked.length === 0) {
         summaryList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Tidak ada data rekap.</p>`;
       } else {
-        summaryList.innerHTML = rankedStaff.map(([staff, count]) => {
-          const percentage = Math.round((count / maxCount) * 100);
+        summaryList.innerHTML = ranked.map(([staff, count]) => {
+          const pct = Math.round((count / maxVal) * 100);
           return `
             <div class="space-y-1">
               <div class="flex justify-between text-xs font-medium">
@@ -306,7 +299,7 @@
                 <span class="text-amber-400 font-bold">${count} Kesalahan</span>
               </div>
               <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800">
-                <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
               </div>
             </div>
           `;
