@@ -4,19 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Executive Staff Monitoring Dashboard</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
-          }
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
         }
       }
     }
@@ -24,16 +19,15 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .glass-card {
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(51, 65, 85, 0.4);
+      border: 1px solid rgba(51, 65, 85, 0.5);
     }
     .glow-blue { box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3); }
     .glow-rose { box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.3); }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
     ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(94, 234, 212, 0.8); }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-blue-500 selection:text-white antialiased">
@@ -78,12 +72,12 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="flex-1 p-4 lg:p-8 space-y-6 overflow-x-hidden">
       
-      <!-- TOP HEADER BAR WITH DATE & KEYWORD FILTER -->
+      <!-- TOP HEADER BAR -->
       <header class="glass-card p-6 rounded-3xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 glow-blue">
         <div>
           <div class="flex items-center gap-3">
             <h2 id="currentSiteTitle" class="text-3xl font-black bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent">
-              PULITOTO
+              BANDAR80
             </h2>
             <span class="text-[10px] px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/30 tracking-wider">
               ONLINE SYNC
@@ -95,7 +89,6 @@
         <!-- CONTROLS: DATE FILTER & SEARCH BAR -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full xl:w-auto">
           
-          <!-- DROPDOWN FILTER TANGGAL -->
           <div class="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2.5 rounded-2xl border border-slate-800">
             <label for="dateSelect" class="text-xs font-bold text-slate-400 whitespace-nowrap">📅 Tanggal:</label>
             <select id="dateSelect" onchange="filterData()" class="bg-transparent text-xs font-bold text-amber-400 focus:outline-none cursor-pointer py-0.5">
@@ -103,7 +96,6 @@
             </select>
           </div>
 
-          <!-- SEARCH INPUT -->
           <div class="w-full sm:w-72 relative">
             <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff, Keterangan, ID..." 
               class="w-full bg-slate-900/90 text-slate-200 placeholder-slate-500 text-xs px-4 py-3 rounded-2xl border border-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-inner">
@@ -116,31 +108,23 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-blue-500/10 rounded-full blur-xl"></div>
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Kesalahan</p>
           <p id="statTotal" class="text-3xl font-black text-blue-400 mt-2">0</p>
-          <p class="text-[10px] text-slate-500 mt-1">Sesuai filter terpilih</p>
         </div>
 
         <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl"></div>
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Staff Terlibat</p>
           <p id="statStaffCount" class="text-3xl font-black text-cyan-400 mt-2">0</p>
-          <p class="text-[10px] text-slate-500 mt-1">Personel tercatat</p>
         </div>
 
         <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-rose-500/20">
-          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl"></div>
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kesalahan Terbanyak</p>
           <p id="statTopStaff" class="text-base font-extrabold text-rose-400 mt-2 truncate">-</p>
-          <p class="text-[10px] text-slate-500 mt-1">Memerlukan evaluasi</p>
         </div>
 
         <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-amber-500/10 rounded-full blur-xl"></div>
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tanggal Filter</p>
           <p id="statActiveDate" class="text-base font-extrabold text-amber-400 mt-2 truncate">SEMUA TANGGAL</p>
-          <p class="text-[10px] text-slate-500 mt-1">Filter Aktif</p>
         </div>
 
       </div>
@@ -225,10 +209,10 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzq8G9oqudQgFNJo7bTDQiFSKWWS9RbxA0Opt-nhaI5hj9SJrwI-Y7SUdqM6spPLA_Z/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRxHVEumc-T8OJdLoJhO2wk1prjz91f594HNLb7Wt0v_5O-zXjRto0paNowMfHVQ3Y/exec";
 
     const DEFAULT_SITES = [
-      "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BANDARBO", "BOSJOKO", 
+      "BANDAR80", "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BOSJOKO", 
       "DEPOROS", "DINGDONTOGEL", "FATCAI", "FIATOCEL", "GENOTOTO", "GOLTOGEL", 
       "HOKIJITU", "HOMETOGEL", "JUARA88", "INDRATOGEL", "JONITOGEL", "JUDOTOTO", 
       "JUTAWANBET", "LAPAK99", "LATOTO"
@@ -236,7 +220,7 @@
 
     let allData = [];
     let rankingData = [];
-    let currentSite = "PULITOTO";
+    let currentSite = "BANDAR80";
     let listOfSites = [];
 
     async function loadData() {
@@ -253,7 +237,7 @@
 
         allData = result.data || [];
         rankingData = result.ranking || [];
-        currentSite = result.currentSite || "PULITOTO";
+        currentSite = result.currentSite || "BANDAR80";
 
         document.getElementById("currentSiteTitle").textContent = currentSite;
 
@@ -269,7 +253,7 @@
         console.error("Gagal mengambil data:", err);
         listOfSites = DEFAULT_SITES;
         renderSiteButtons(listOfSites);
-        renderSiteButtonStyles("PULITOTO");
+        renderSiteButtonStyles("BANDAR80");
       }
     }
 
@@ -359,7 +343,6 @@
 
       let filtered = allData;
 
-      // Filter Berdasarkan Tanggal
       if (selectedDate && selectedDate !== "ALL") {
         filtered = filtered.filter(item => item.tanggal === selectedDate);
         document.getElementById("statActiveDate").textContent = selectedDate;
@@ -367,7 +350,6 @@
         document.getElementById("statActiveDate").textContent = "SEMUA TANGGAL";
       }
 
-      // Filter Berdasarkan Kata Kunci Pencarian
       if (keyword) {
         filtered = filtered.filter(item => 
           (item.namaStaff && item.namaStaff.toLowerCase().includes(keyword)) ||
@@ -445,7 +427,7 @@
         }).join('');
       }
 
-      // 3. REKAP SUMMARY LIST
+      // 3. REKAP BAR SUMMARY
       const summaryList = document.getElementById("summaryList");
       const maxVal = sortedRanks.length > 0 ? parseInt(sortedRanks[0].total) || 1 : 1;
 
