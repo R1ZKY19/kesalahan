@@ -52,7 +52,7 @@
       <header class="glass p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div class="flex items-center gap-3">
-            <h2 id="currentSiteTitle" class="text-2xl font-extrabold text-blue-400">ZIATOGEL</h2>
+            <h2 id="currentSiteTitle" class="text-2xl font-extrabold text-blue-400">PULITOTO</h2>
             <span class="text-[10px] px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">SEL A2 AKTIF</span>
           </div>
           <p class="text-xs text-slate-400 mt-1">Situs Terpilih di Google Sheets (Sel A2)</p>
@@ -83,6 +83,7 @@
       <!-- TABLES GRID -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
+        <!-- LOG DETAIL TABLE -->
         <div class="lg:col-span-2 glass p-5 rounded-2xl border border-slate-800 space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-bold text-slate-200">DETAIL LOG KESALAHAN</h3>
@@ -107,10 +108,15 @@
           </div>
         </div>
 
+        <!-- RANKING & SUMMARY -->
         <div class="space-y-6">
           
+          <!-- RANKING TABLE (DIBACA DARI AK1:AN31) -->
           <div class="glass p-5 rounded-2xl border border-slate-800 space-y-4">
-            <h3 class="text-sm font-bold text-slate-200">RANKING KESALAHAN</h3>
+            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+              RANKING KESALAHAN (KOLOM AK:AM)
+            </h3>
             <div class="overflow-hidden rounded-xl border border-slate-800">
               <table class="w-full text-left border-collapse text-xs">
                 <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
@@ -127,8 +133,12 @@
             </div>
           </div>
 
+          <!-- REKAP KESALAHAN -->
           <div class="glass p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h3 class="text-sm font-bold text-slate-200">REKAP TOTAL STAFF</h3>
+            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              REKAP TOTAL STAFF
+            </h3>
             <div id="summaryList" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
               <p class="text-xs text-slate-500 text-center py-4">Memuat rekap...</p>
             </div>
@@ -143,17 +153,18 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytg5Z5PmjWtS1Usj53wHDL2ay52q6yEDEWPnE5bvgd9OCLJQJGwNNrUcUqJd2sql9S/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXhREzCF_ADAGZMTzFrqtQtPPc3zdsqKwlDkgBiShyc64l3UxO_roj90tfF-z3Pcb-/exec";
 
     const DEFAULT_SITES = [
-      "ZIATOGEL", "DANATOTO", "PULITOTO", "INDRABET", "ANGKARET", "BANDARBO", "BOSJOKO", 
+      "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BANDARBO", "BOSJOKO", 
       "DEPOROS", "DINGDONTOGEL", "FATCAI", "FIATOCEL", "GENOTOTO", "GOLTOGEL", 
       "HOKIJITU", "HOMETOGEL", "JUARA88", "INDRATOGEL", "JONITOGEL", "JUDOTOTO", 
       "JUTAWANBET", "LAPAK99", "LATOTO"
     ];
 
     let allData = [];
-    let currentSite = "ZIATOGEL";
+    let rankingData = [];
+    let currentSite = "PULITOTO";
     let listOfSites = [];
 
     async function loadData() {
@@ -169,7 +180,8 @@
         }
 
         allData = result.data || [];
-        currentSite = result.currentSite || "ZIATOGEL";
+        rankingData = result.ranking || [];
+        currentSite = result.currentSite || "PULITOTO";
         document.getElementById("currentSiteTitle").textContent = currentSite;
 
         let serverSites = result.sites && result.sites.length > 0 ? result.sites : [];
@@ -177,12 +189,12 @@
 
         renderSiteButtons(listOfSites);
         renderSiteButtonStyles(currentSite);
-        renderDashboard(allData);
+        renderDashboard(allData, rankingData);
       } catch (err) {
         console.error("Gagal mengambil data:", err);
         listOfSites = DEFAULT_SITES;
         renderSiteButtons(listOfSites);
-        renderSiteButtonStyles("ZIATOGEL");
+        renderSiteButtonStyles("PULITOTO");
       }
     }
 
@@ -225,7 +237,6 @@
       `;
 
       try {
-        // Kirim permintaan ubah sel A2 ke Google Apps Script (?site=NAMA_SITUS)
         const response = await fetch(SCRIPT_URL + "?site=" + encodeURIComponent(siteName));
         const result = await response.json();
 
@@ -237,6 +248,7 @@
         }
 
         allData = result.data || [];
+        rankingData = result.ranking || [];
         filterData();
       } catch (err) {
         console.error("Gagal memilih situs:", err);
@@ -259,26 +271,19 @@
         );
       }
 
-      renderDashboard(filtered);
+      renderDashboard(filtered, rankingData);
     }
 
-    function renderDashboard(data) {
+    function renderDashboard(data, ranks) {
       document.getElementById("statTotal").textContent = data.length;
       document.getElementById("recordCount").textContent = `${data.length} Data`;
 
-      const staffCounts = {};
-      data.forEach(item => {
-        if (item.namaStaff) {
-          staffCounts[item.namaStaff] = (staffCounts[item.namaStaff] || 0) + 1;
-        }
-      });
-
-      const uniqueStaff = Object.keys(staffCounts);
+      const uniqueStaff = [...new Set(data.map(item => item.namaStaff).filter(Boolean))];
       document.getElementById("statStaffCount").textContent = uniqueStaff.length;
 
-      const ranked = Object.entries(staffCounts).sort((a, b) => b - a);
-      document.getElementById("statTopStaff").textContent = ranked.length > 0 ? `${ranked[0][0]} (${ranked[0]})` : "-";
+      document.getElementById("statTopStaff").textContent = ranks.length > 0 ? `${ranks[0].namaStaff} (${ranks[0].total})` : "-";
 
+      // 1. TABEL DETAIL LOG KESALAHAN
       const detailTbody = document.getElementById("detailTable");
       if (data.length === 0) {
         detailTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Tidak ada data kesalahan untuk situs ini.</td></tr>`;
@@ -291,19 +296,20 @@
             <td class="p-3 text-indigo-400 font-mono text-[11px]">${row.kodeId || '-'}</td>
             <td class="p-3 text-center">
               ${row.link && row.link !== '#' && row.link !== '' 
-                ? `<a href="${row.link}" target="_blank" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition">Bukti ↗</a>` 
+                ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/40 hover:text-white transition">Bukti ↗</a>` 
                 : `<span class="text-slate-600">-</span>`}
             </td>
           </tr>
         `).join('');
       }
 
+      // 2. TABEL RANKING (LANGSUNG DARI KOLOM AK:AM GOOGLE SHEETS)
       const rankTbody = document.getElementById("rankTable");
-      if (ranked.length === 0) {
+      if (!ranks || ranks.length === 0) {
         rankTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Tidak ada ranking.</td></tr>`;
       } else {
-        rankTbody.innerHTML = ranked.map(([staff, count], idx) => {
-          let badge = `<span class="text-slate-400">${idx + 1}</span>`;
+        rankTbody.innerHTML = ranks.map((item, idx) => {
+          let badge = `<span class="text-slate-400 font-semibold">${item.rank || (idx + 1)}</span>`;
           if (idx === 0) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">1</span>`;
           if (idx === 1) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300/20 text-slate-300 font-bold border border-slate-300/30">2</span>`;
           if (idx === 2) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-700/20 text-amber-600 font-bold border border-amber-700/30">3</span>`;
@@ -311,25 +317,27 @@
           return `
             <tr class="hover:bg-slate-800/40 transition">
               <td class="p-2.5 text-center">${badge}</td>
-              <td class="p-2.5 font-medium text-slate-200">${staff}</td>
-              <td class="p-2.5 text-center font-bold text-rose-400">${count}</td>
+              <td class="p-2.5 font-medium text-slate-200">${item.namaStaff}</td>
+              <td class="p-2.5 text-center font-bold text-rose-400">${item.total}</td>
             </tr>
           `;
         }).join('');
       }
 
+      // 3. REKAP SUMMARY LIST
       const summaryList = document.getElementById("summaryList");
-      const maxVal = ranked.length > 0 ? ranked[0] : 1;
+      const maxVal = ranks.length > 0 ? parseInt(ranks[0].total) || 1 : 1;
 
-      if (ranked.length === 0) {
+      if (!ranks || ranks.length === 0) {
         summaryList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Tidak ada data rekap.</p>`;
       } else {
-        summaryList.innerHTML = ranked.map(([staff, count]) => {
+        summaryList.innerHTML = ranks.slice(0, 15).map(item => {
+          const count = parseInt(item.total) || 0;
           const pct = Math.round((count / maxVal) * 100);
           return `
             <div class="space-y-1">
               <div class="flex justify-between text-xs font-medium">
-                <span class="text-slate-300">${staff}</span>
+                <span class="text-slate-300">${item.namaStaff}</span>
                 <span class="text-amber-400 font-bold">${count} Kesalahan</span>
               </div>
               <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800">
