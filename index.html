@@ -1,145 +1,212 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Monitoring Kesalahan Staff</title>
+  <title>Executive Staff Monitoring Dashboard</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eff6ff', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+          }
+        }
+      }
+    }
+  </script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.4);
+    }
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+    }
+    .glow-blue { box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3); }
+    .glow-rose { box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.3); }
+    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
     ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(94, 234, 212, 0.8); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-blue-500 selection:text-white antialiased">
 
-  <div class="flex flex-col md:flex-row min-h-screen">
+  <div class="flex flex-col lg:flex-row min-h-screen">
     
-    <!-- SIDEBAR TOMBOL SITUS (SEBELAH KIRI) -->
-    <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0 max-h-screen md:sticky md:top-0">
-      <div class="space-y-4 overflow-hidden flex flex-col h-full">
+    <!-- SIDEBAR LEFT - BRAND SELECTOR -->
+    <aside class="w-full lg:w-72 bg-slate-900/90 border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0 lg:h-screen lg:sticky lg:top-0 z-30">
+      <div class="space-y-6 overflow-hidden flex flex-col h-full">
         
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
-            <h1 class="text-base font-bold text-slate-100 tracking-wide">MONITORING STAFF</h1>
+        <!-- LOGO BRAND HEADER -->
+        <div class="shrink-0 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-white shadow-lg glow-blue text-lg">
+              M
+            </div>
+            <div>
+              <h1 class="text-base font-extrabold text-white tracking-tight">STAFF MONITORING</h1>
+              <p class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                Sheet: KESALAHAN
+              </p>
+            </div>
           </div>
-          <p class="text-[11px] text-slate-400 mt-1">Sheet Master: <span class="text-emerald-400 font-medium">KESALAHAN</span></p>
         </div>
 
-        <div class="flex justify-between items-center shrink-0 pt-2 border-t border-slate-800">
-          <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">PILIH SITUS / BRAND</p>
-          <span id="siteCountBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold">0 Situs</span>
+        <div class="pt-4 border-t border-slate-800/80 flex justify-between items-center shrink-0">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">DAFTAR SITUS / BRAND</p>
+          <span id="siteCountBadge" class="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">0 Situs</span>
         </div>
 
+        <!-- SCROLLABLE BRAND BUTTONS -->
         <div id="siteButtons" class="space-y-1.5 overflow-y-auto pr-1 flex-1">
-          <p class="text-xs text-slate-500 text-center py-4">Memuat daftar situs...</p>
+          <p class="text-xs text-slate-500 text-center py-6">Memuat daftar situs...</p>
         </div>
 
       </div>
 
-      <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500 text-center shrink-0 mt-2">
-        Ubah Sel A2 Google Sheets Otomatis
+      <!-- FOOTER -->
+      <div class="pt-4 border-t border-slate-800/80 text-[11px] text-slate-500 text-center shrink-0 mt-2">
+        <span class="text-slate-400 font-medium">Sync Real-time Google Sheets</span>
       </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-4 md:p-8 space-y-6 overflow-x-hidden">
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="flex-1 p-4 lg:p-8 space-y-6 overflow-x-hidden">
       
-      <header class="glass p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <!-- TOP HEADER BAR -->
+      <header class="glass-card p-6 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 glow-blue">
         <div>
           <div class="flex items-center gap-3">
-            <h2 id="currentSiteTitle" class="text-2xl font-extrabold text-blue-400">PULITOTO</h2>
-            <span class="text-[10px] px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold border border-blue-500/30">SEL A2 AKTIF</span>
+            <h2 id="currentSiteTitle" class="text-3xl font-black bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent">
+              PULITOTO
+            </h2>
+            <span class="text-[10px] px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/30 tracking-wider">
+              ONLINE SYNC
+            </span>
           </div>
-          <p class="text-xs text-slate-400 mt-1">Situs Terpilih di Google Sheets (Sel A2)</p>
+          <p class="text-xs text-slate-400 mt-1">Laporan Kesalahan Staff & Leaderboard Real-time</p>
         </div>
 
-        <div class="w-full sm:w-72">
-          <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff / keterangan / ID..." 
-            class="w-full bg-slate-900 text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500 transition shadow-inner">
+        <!-- SEARCH INPUT -->
+        <div class="w-full sm:w-80 relative">
+          <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff, Keterangan, ID..." 
+            class="w-full bg-slate-900/90 text-slate-200 placeholder-slate-500 text-xs px-4 py-3 rounded-2xl border border-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-inner">
         </div>
       </header>
 
-      <!-- STAT CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="glass p-4 rounded-2xl border border-slate-800">
-          <p class="text-xs text-slate-400 font-medium">Total Kesalahan</p>
-          <p id="statTotal" class="text-2xl font-bold text-blue-400 mt-1">0</p>
+      <!-- METRIC KPI CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-blue-500/10 rounded-full blur-xl"></div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Kesalahan</p>
+          <p id="statTotal" class="text-3xl font-black text-blue-400 mt-2">0</p>
+          <p class="text-[10px] text-slate-500 mt-1">Terverifikasi di sistem</p>
         </div>
-        <div class="glass p-4 rounded-2xl border border-slate-800">
-          <p class="text-xs text-slate-400 font-medium">Jumlah Staff Terlibat</p>
-          <p id="statStaffCount" class="text-2xl font-bold text-cyan-400 mt-1">0</p>
+
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl"></div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Staff Terlibat</p>
+          <p id="statStaffCount" class="text-3xl font-black text-cyan-400 mt-2">0</p>
+          <p class="text-[10px] text-slate-500 mt-1">Personel tercatat</p>
         </div>
-        <div class="glass p-4 rounded-2xl border border-slate-800">
-          <p class="text-xs text-slate-400 font-medium">Kesalahan Terbanyak</p>
-          <p id="statTopStaff" class="text-sm font-semibold text-rose-400 mt-1 truncate">-</p>
+
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden border-rose-500/20">
+          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl"></div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kesalahan Terbanyak</p>
+          <p id="statTopStaff" class="text-base font-extrabold text-rose-400 mt-2 truncate">-</p>
+          <p class="text-[10px] text-slate-500 mt-1">Memerlukan evaluasi</p>
         </div>
+
+        <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+          <div class="absolute -right-2 -bottom-2 w-16 h-16 bg-amber-500/10 rounded-full blur-xl"></div>
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Situs Aktif</p>
+          <p id="statActiveSite" class="text-base font-extrabold text-amber-400 mt-2 truncate">PULITOTO</p>
+          <p class="text-[10px] text-slate-500 mt-1">Sel A2 Google Sheets</p>
+        </div>
+
       </div>
 
-      <!-- TABLES GRID -->
+      <!-- MAIN CONTENT TABLES GRID -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- LOG DETAIL TABLE -->
-        <div class="lg:col-span-2 glass p-5 rounded-2xl border border-slate-800 space-y-4">
+        <!-- DETAIL LOG TABLE (2 COLUMNS) -->
+        <div class="lg:col-span-2 glass-card p-6 rounded-3xl space-y-4">
           <div class="flex justify-between items-center">
-            <h3 class="text-sm font-bold text-slate-200">DETAIL LOG KESALAHAN</h3>
-            <span id="recordCount" class="text-xs font-semibold text-slate-400 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">0 Data</span>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+              <h3 class="text-sm font-extrabold text-slate-200 uppercase tracking-wider">Detail Log Kesalahan Staff</h3>
+            </div>
+            <span id="recordCount" class="text-xs font-bold text-slate-400 bg-slate-900 px-3 py-1 rounded-full border border-slate-800">0 Data</span>
           </div>
 
-          <div class="overflow-x-auto max-h-[500px] overflow-y-auto rounded-xl border border-slate-800">
+          <div class="overflow-x-auto max-h-[520px] overflow-y-auto rounded-2xl border border-slate-800">
             <table class="w-full text-left border-collapse text-xs">
-              <thead class="sticky top-0 bg-slate-900 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+              <thead class="sticky top-0 bg-slate-900/95 backdrop-blur-md text-slate-400 uppercase tracking-wider font-bold border-b border-slate-800">
                 <tr>
-                  <th class="p-3">Nama Staff</th>
-                  <th class="p-3">Tanggal</th>
-                  <th class="p-3">Keterangan</th>
-                  <th class="p-3">Kode ID</th>
-                  <th class="p-3 text-center">Bukti</th>
+                  <th class="p-3.5">Nama Staff</th>
+                  <th class="p-3.5">Tanggal</th>
+                  <th class="p-3.5">Keterangan</th>
+                  <th class="p-3.5">Kode ID</th>
+                  <th class="p-3.5 text-center">Bukti</th>
                 </tr>
               </thead>
               <tbody id="detailTable" class="divide-y divide-slate-800/60 text-slate-300">
-                <tr><td colspan="5" class="p-6 text-center text-slate-500">Memuat data dari Google Sheets...</td></tr>
+                <tr><td colspan="5" class="p-8 text-center text-slate-500">Memuat data dari Google Sheets...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- RANKING & SUMMARY -->
+        <!-- RANKING & SUMMARY SIDE PANEL (1 COLUMN) -->
         <div class="space-y-6">
           
-          <!-- RANKING TABLE (DIBACA DARI AK1:AN31) -->
-          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-4">
-            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-              RANKING KESALAHAN (KOLOM AK:AM)
-            </h3>
-            <div class="overflow-hidden rounded-xl border border-slate-800">
+          <!-- RANKING LEADERBOARD (AK1:AN31 - SORTED HIGHEST FIRST) -->
+          <div class="glass-card p-6 rounded-3xl space-y-4 glow-rose">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                <h3 class="text-sm font-extrabold text-slate-200 uppercase tracking-wider">Ranking Kesalahan</h3>
+              </div>
+              <span class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">AK1:AN31</span>
+            </div>
+
+            <div class="overflow-hidden rounded-2xl border border-slate-800">
               <table class="w-full text-left border-collapse text-xs">
-                <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider font-bold border-b border-slate-800">
                   <tr>
-                    <th class="p-2.5 text-center w-10">Rank</th>
-                    <th class="p-2.5">Nama Staff</th>
-                    <th class="p-2.5 text-center w-16">Total</th>
+                    <th class="p-3 text-center w-12">Rank</th>
+                    <th class="p-3">Nama Staff</th>
+                    <th class="p-3 text-center w-20">Total</th>
                   </tr>
                 </thead>
                 <tbody id="rankTable" class="divide-y divide-slate-800/60 text-slate-300">
-                  <tr><td colspan="3" class="p-4 text-center text-slate-500">Memuat ranking...</td></tr>
+                  <tr><td colspan="3" class="p-6 text-center text-slate-500">Memuat ranking...</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          <!-- REKAP KESALAHAN -->
-          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-              REKAP TOTAL STAFF
-            </h3>
-            <div id="summaryList" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+          <!-- REKAP VISUAL STAFF -->
+          <div class="glass-card p-6 rounded-3xl space-y-4">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <h3 class="text-sm font-extrabold text-slate-200 uppercase tracking-wider">Persentase Beban Kesalahan</h3>
+            </div>
+            <div id="summaryList" class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
               <p class="text-xs text-slate-500 text-center py-4">Memuat rekap...</p>
             </div>
           </div>
@@ -153,7 +220,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypEA0e3giDDGGvMoWh1XGbtZ13HJwbxsa_4sYBNOsZqFKw9KjresQSINjRaBVDg-rq/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQR4U1rNPfrJ2UxRyieZONa2XRZMIwiVm1jbj3JWO_CnYu_dhX7v03zU6Bby-ZNkrJ/exec";
 
     const DEFAULT_SITES = [
       "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BANDARBO", "BOSJOKO", 
@@ -174,7 +241,7 @@
 
         if (result.error) {
           document.getElementById("detailTable").innerHTML = `
-            <tr><td colspan="5" class="p-6 text-center text-rose-400 font-semibold">${result.error}</td></tr>
+            <tr><td colspan="5" class="p-8 text-center text-rose-400 font-bold">${result.error}</td></tr>
           `;
           return;
         }
@@ -182,14 +249,16 @@
         allData = result.data || [];
         rankingData = result.ranking || [];
         currentSite = result.currentSite || "PULITOTO";
+
         document.getElementById("currentSiteTitle").textContent = currentSite;
+        document.getElementById("statActiveSite").textContent = currentSite;
 
         let serverSites = result.sites && result.sites.length > 0 ? result.sites : [];
         listOfSites = [...new Set([...serverSites, ...DEFAULT_SITES])];
 
         renderSiteButtons(listOfSites);
         renderSiteButtonStyles(currentSite);
-        renderDashboard(allData, rankingData);
+        filterData();
       } catch (err) {
         console.error("Gagal mengambil data:", err);
         listOfSites = DEFAULT_SITES;
@@ -204,9 +273,9 @@
 
       container.innerHTML = sites.map(site => `
         <button id="btn-${site.replace(/\s+/g, '-')}" onclick="selectSite('${site}')" 
-          class="site-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium tracking-wide transition duration-150 flex justify-between items-center bg-slate-800/40 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800/80">
+          class="site-btn w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition duration-150 flex justify-between items-center bg-slate-800/40 text-slate-400 hover:bg-slate-800 hover:text-slate-100 border border-slate-800/80">
           <span>${site}</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-600 indicator"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-700 indicator"></span>
         </button>
       `).join('');
     }
@@ -214,26 +283,27 @@
     function renderSiteButtonStyles(activeSite) {
       const allButtons = document.querySelectorAll(".site-btn");
       allButtons.forEach(btn => {
-        btn.className = "site-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium tracking-wide transition duration-150 flex justify-between items-center bg-slate-800/40 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800/80";
+        btn.className = "site-btn w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition duration-150 flex justify-between items-center bg-slate-800/40 text-slate-400 hover:bg-slate-800 hover:text-slate-100 border border-slate-800/80";
         const ind = btn.querySelector(".indicator");
-        if (ind) ind.className = "w-1.5 h-1.5 rounded-full bg-slate-600 indicator";
+        if (ind) ind.className = "w-2 h-2 rounded-full bg-slate-700 indicator";
       });
 
       const activeBtn = document.getElementById(`btn-${activeSite.replace(/\s+/g, '-')}`);
       if (activeBtn) {
-        activeBtn.className = "site-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold tracking-wide transition duration-150 flex justify-between items-center bg-blue-600 text-white shadow-lg shadow-blue-600/30 border border-blue-500/40";
+        activeBtn.className = "site-btn w-full text-left px-4 py-2.5 rounded-xl text-xs font-black tracking-wide transition duration-150 flex justify-between items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg glow-blue border border-blue-400/30";
         const ind = activeBtn.querySelector(".indicator");
-        if (ind) ind.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping indicator";
+        if (ind) ind.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping indicator";
       }
     }
 
     async function selectSite(siteName) {
       currentSite = siteName;
       document.getElementById("currentSiteTitle").textContent = siteName;
+      document.getElementById("statActiveSite").textContent = siteName;
       renderSiteButtonStyles(siteName);
 
       document.getElementById("detailTable").innerHTML = `
-        <tr><td colspan="5" class="p-6 text-center text-blue-400 font-semibold animate-pulse">Mengubah sel A2 di Google Sheets ke "${siteName}" & memuat data...</td></tr>
+        <tr><td colspan="5" class="p-8 text-center text-blue-400 font-bold animate-pulse">Mengubah sel A2 Google Sheets ke "${siteName}" & memuat data...</td></tr>
       `;
 
       try {
@@ -242,7 +312,7 @@
 
         if (result.error) {
           document.getElementById("detailTable").innerHTML = `
-            <tr><td colspan="5" class="p-6 text-center text-rose-400 font-semibold">${result.error}</td></tr>
+            <tr><td colspan="5" class="p-8 text-center text-rose-400 font-bold">${result.error}</td></tr>
           `;
           return;
         }
@@ -253,7 +323,7 @@
       } catch (err) {
         console.error("Gagal memilih situs:", err);
         document.getElementById("detailTable").innerHTML = `
-          <tr><td colspan="5" class="p-6 text-center text-rose-400">Gagal mengubah sel A2 di Google Sheets.</td></tr>
+          <tr><td colspan="5" class="p-8 text-center text-rose-400 font-bold">Gagal terhubung ke Google Sheets.</td></tr>
         `;
       }
     }
@@ -275,73 +345,90 @@
     }
 
     function renderDashboard(data, ranks) {
+      // Metric Counters
       document.getElementById("statTotal").textContent = data.length;
       document.getElementById("recordCount").textContent = `${data.length} Data`;
 
       const uniqueStaff = [...new Set(data.map(item => item.namaStaff).filter(Boolean))];
       document.getElementById("statStaffCount").textContent = uniqueStaff.length;
 
-      document.getElementById("statTopStaff").textContent = ranks.length > 0 ? `${ranks[0].namaStaff} (${ranks[0].total})` : "-";
+      // PASTIKAN RANKING DIURUTKAN TERBANYAK DI PALING ATAS
+      let sortedRanks = [...ranks];
+      sortedRanks.sort((a, b) => (parseInt(b.total) || 0) - (parseInt(a.total) || 0));
 
-      // 1. TABEL DETAIL LOG KESALAHAN
+      document.getElementById("statTopStaff").textContent = sortedRanks.length > 0 
+        ? `${sortedRanks[0].namaStaff} (${sortedRanks[0].total})` 
+        : "-";
+
+      // 1. RENDER DETAIL LOG TABLE
       const detailTbody = document.getElementById("detailTable");
       if (data.length === 0) {
-        detailTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Tidak ada data kesalahan untuk situs ini.</td></tr>`;
+        detailTbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">Tidak ada log kesalahan ditemukan.</td></tr>`;
       } else {
         detailTbody.innerHTML = data.map(row => `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="p-3 font-semibold text-slate-200">${row.namaStaff || '-'}</td>
-            <td class="p-3 text-slate-400 whitespace-nowrap">${row.tanggal || '-'}</td>
-            <td class="p-3 text-slate-300">${row.keterangan || '-'}</td>
-            <td class="p-3 text-indigo-400 font-mono text-[11px]">${row.kodeId || '-'}</td>
-            <td class="p-3 text-center">
+          <tr class="hover:bg-slate-800/50 transition duration-150">
+            <td class="p-3.5 font-bold text-slate-100">${row.namaStaff || '-'}</td>
+            <td class="p-3.5 text-slate-400 whitespace-nowrap font-medium">${row.tanggal || '-'}</td>
+            <td class="p-3.5 text-slate-300">${row.keterangan || '-'}</td>
+            <td class="p-3.5 text-indigo-400 font-mono text-[11px] font-bold">${row.kodeId || '-'}</td>
+            <td class="p-3.5 text-center">
               ${row.link && row.link !== '#' && row.link !== '' 
-                ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/40 hover:text-white transition">Bukti ↗</a>` 
-                : `<span class="text-slate-600">-</span>`}
+                ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer" 
+                     class="inline-flex items-center px-3 py-1 rounded-xl text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition shadow-sm">
+                     Bukti ↗
+                   </a>` 
+                : `<span class="text-slate-600 font-bold">-</span>`}
             </td>
           </tr>
         `).join('');
       }
 
-      // 2. TABEL RANKING (LANGSUNG DARI KOLOM AK:AM GOOGLE SHEETS)
+      // 2. RENDER RANKING LEADERBOARD (JUARA 1 DI ATAS)
       const rankTbody = document.getElementById("rankTable");
-      if (!ranks || ranks.length === 0) {
-        rankTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Tidak ada ranking.</td></tr>`;
+      if (!sortedRanks || sortedRanks.length === 0) {
+        rankTbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-500">Tidak ada ranking.</td></tr>`;
       } else {
-        rankTbody.innerHTML = ranks.map((item, idx) => {
-          let badge = `<span class="text-slate-400 font-semibold">${item.rank || (idx + 1)}</span>`;
-          if (idx === 0) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">1</span>`;
-          if (idx === 1) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300/20 text-slate-300 font-bold border border-slate-300/30">2</span>`;
-          if (idx === 2) badge = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-700/20 text-amber-600 font-bold border border-amber-700/30">3</span>`;
+        rankTbody.innerHTML = sortedRanks.map((item, idx) => {
+          let badge = `<span class="text-slate-400 font-bold">${idx + 1}</span>`;
+          let rowClass = "hover:bg-slate-800/40";
+
+          if (idx === 0) {
+            badge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 font-black shadow-md">1</span>`;
+            rowClass = "bg-amber-500/10 hover:bg-amber-500/20 border-l-2 border-amber-400";
+          } else if (idx === 1) {
+            badge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-300 text-slate-950 font-black shadow-md">2</span>`;
+          } else if (idx === 2) {
+            badge = `<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-700 text-white font-black shadow-md">3</span>`;
+          }
 
           return `
-            <tr class="hover:bg-slate-800/40 transition">
-              <td class="p-2.5 text-center">${badge}</td>
-              <td class="p-2.5 font-medium text-slate-200">${item.namaStaff}</td>
-              <td class="p-2.5 text-center font-bold text-rose-400">${item.total}</td>
+            <tr class="${rowClass} transition duration-150">
+              <td class="p-3 text-center">${badge}</td>
+              <td class="p-3 font-bold text-slate-200">${item.namaStaff}</td>
+              <td class="p-3 text-center font-black text-rose-400 text-sm">${item.total}</td>
             </tr>
           `;
         }).join('');
       }
 
-      // 3. REKAP SUMMARY LIST
+      // 3. REKAP BAR SUMMARY
       const summaryList = document.getElementById("summaryList");
-      const maxVal = ranks.length > 0 ? parseInt(ranks[0].total) || 1 : 1;
+      const maxVal = sortedRanks.length > 0 ? parseInt(sortedRanks[0].total) || 1 : 1;
 
-      if (!ranks || ranks.length === 0) {
+      if (!sortedRanks || sortedRanks.length === 0) {
         summaryList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Tidak ada data rekap.</p>`;
       } else {
-        summaryList.innerHTML = ranks.slice(0, 15).map(item => {
+        summaryList.innerHTML = sortedRanks.slice(0, 15).map(item => {
           const count = parseInt(item.total) || 0;
           const pct = Math.round((count / maxVal) * 100);
           return `
             <div class="space-y-1">
-              <div class="flex justify-between text-xs font-medium">
+              <div class="flex justify-between text-xs font-semibold">
                 <span class="text-slate-300">${item.namaStaff}</span>
                 <span class="text-amber-400 font-bold">${count} Kesalahan</span>
               </div>
-              <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800">
-                <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+              <div class="w-full bg-slate-900 rounded-full h-2 border border-slate-800 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
               </div>
             </div>
           `;
