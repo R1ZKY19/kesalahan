@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Monitoring Kesalahan Staff</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -20,7 +18,6 @@
     <!-- SIDEBAR TOMBOL SITUS (SEBELAH KIRI) -->
     <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0">
       <div class="space-y-6">
-        <!-- BRAND/LOGO TITLE -->
         <div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
@@ -29,13 +26,10 @@
           <p class="text-[11px] text-slate-400 mt-1">Sheet Master: <span class="text-emerald-400 font-medium">KESALAHAN</span></p>
         </div>
 
-        <!-- LIST TOMBOL SITUS -->
         <div>
           <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">PILIH SITUS / BRAND</p>
           <div id="siteButtons" class="space-y-2">
-            <button class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-lg shadow-blue-600/30">
-              PULITOTO
-            </button>
+            <p class="text-xs text-slate-500">Memuat daftar situs...</p>
           </div>
         </div>
       </div>
@@ -55,7 +49,6 @@
           <p class="text-xs text-slate-400 mt-0.5">Daftar Rekap & Log Kesalahan Staff</p>
         </div>
 
-        <!-- Search Bar -->
         <div class="w-full sm:w-72">
           <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff / keterangan / ID..." 
             class="w-full bg-slate-900 text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500 transition">
@@ -81,7 +74,7 @@
       <!-- TABLES GRID -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- LOG DETAIL TABLE (LEFT - 2 COLS) -->
+        <!-- LOG DETAIL TABLE -->
         <div class="lg:col-span-2 glass p-5 rounded-2xl border border-slate-800 space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-bold text-slate-200">DETAIL LOG KESALAHAN</h3>
@@ -106,10 +99,9 @@
           </div>
         </div>
 
-        <!-- RANKING & SUMMARY (RIGHT - 1 COL) -->
+        <!-- RANKING & SUMMARY -->
         <div class="space-y-6">
           
-          <!-- RANKING TABLE -->
           <div class="glass p-5 rounded-2xl border border-slate-800 space-y-4">
             <h3 class="text-sm font-bold text-slate-200">RANKING KESALAHAN</h3>
             <div class="overflow-hidden rounded-xl border border-slate-800">
@@ -128,7 +120,6 @@
             </div>
           </div>
 
-          <!-- REKAP KESALAHAN -->
           <div class="glass p-5 rounded-2xl border border-slate-800 space-y-3">
             <h3 class="text-sm font-bold text-slate-200">REKAP TOTAL STAFF</h3>
             <div id="summaryList" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
@@ -145,7 +136,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxE9XdJoLPLbL2Cmk_6RFoWc8o-NeffotxluyjFHkPVj2UqHmQGNmk-l16b81C8foFl/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDeM5Zv1mV5xjgDvtUaxcpjRLZo-bJ85ESOlC3WLbOz_1kHhP40mI1dTtPrII91Ae7/exec";
 
     let allData = [];
     let currentSite = "PULITOTO";
@@ -156,19 +147,22 @@
         const result = await response.json();
 
         if (result.error) {
-          alert("Error: " + result.error);
+          document.getElementById("detailTable").innerHTML = `
+            <tr><td colspan="5" class="p-6 text-center text-rose-400 font-semibold">${result.error}</td></tr>
+          `;
           return;
         }
 
         allData = result.data || [];
         currentSite = result.currentSite || "PULITOTO";
+        document.getElementById("currentSiteTitle").textContent = currentSite;
 
-        renderSiteButtons(result.sites || [currentSite]);
+        renderSiteButtons(result.sites && result.sites.length > 0 ? result.sites : [currentSite]);
         filterData();
       } catch (err) {
         console.error("Gagal mengambil data:", err);
         document.getElementById("detailTable").innerHTML = `
-          <tr><td colspan="5" class="p-6 text-center text-rose-400">Gagal terhubung ke Google Sheets.</td></tr>
+          <tr><td colspan="5" class="p-6 text-center text-rose-400">Gagal terhubung ke Google Sheets. Pastikan 'Who has access' diset ke 'Anyone'.</td></tr>
         `;
       }
     }
@@ -194,7 +188,6 @@
       currentSite = siteName;
       document.getElementById("currentSiteTitle").textContent = siteName;
       
-      // Update tampilan tombol aktif
       const buttons = document.querySelectorAll("#siteButtons button");
       buttons.forEach(btn => {
         if (btn.textContent.trim().toUpperCase() === siteName.toUpperCase()) {
@@ -210,7 +203,6 @@
     function filterData() {
       const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
 
-      // Filter data sesuai situs aktif dan kata kunci pencarian
       let filtered = allData;
 
       if (keyword) {
@@ -225,7 +217,6 @@
     }
 
     function renderDashboard(data) {
-      // 1. STATS
       document.getElementById("statTotal").textContent = data.length;
       document.getElementById("recordCount").textContent = `${data.length} Data`;
 
@@ -242,7 +233,6 @@
       const ranked = Object.entries(staffCounts).sort((a, b) => b - a);
       document.getElementById("statTopStaff").textContent = ranked.length > 0 ? `${ranked[0][0]} (${ranked[0]})` : "-";
 
-      // 2. TABEL DETAIL LOG
       const detailTbody = document.getElementById("detailTable");
       if (data.length === 0) {
         detailTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Tidak ada data kesalahan.</td></tr>`;
@@ -262,7 +252,6 @@
         `).join('');
       }
 
-      // 3. TABEL RANKING
       const rankTbody = document.getElementById("rankTable");
       if (ranked.length === 0) {
         rankTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Tidak ada ranking.</td></tr>`;
@@ -283,7 +272,6 @@
         }).join('');
       }
 
-      // 4. REKAP SUMMARY LIST
       const summaryList = document.getElementById("summaryList");
       const maxVal = ranked.length > 0 ? ranked[0] : 1;
 
