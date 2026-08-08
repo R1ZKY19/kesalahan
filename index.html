@@ -156,7 +156,7 @@
         <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800">
           <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
             <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Ranking Kesalahan</h3>
-            <span class="text-[9px] font-mono font-semibold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5">DARI LOG</span>
+            <span class="text-[9px] font-mono font-semibold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5">AL:AM</span>
           </div>
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800">
@@ -190,7 +190,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWpbioinHGE64Q8Z1a34W6JztHZjvZBGEn70CYZht0zVvomQCP2nQnTdMq8VW2RUD0/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsplzFC9zcRgwjjdjNJvXlsMlzS6DLkEG4aD5iqt49zYFN_5aXR_Re7_WpdI8Htp6H/exec";
 
     const DEFAULT_SITES = [
       "BANDAR80", "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BOSJOKO",
@@ -368,18 +368,6 @@
       renderDashboard(filtered);
     }
 
-    // Ranking dihitung langsung dari Detail Log yang sedang tampil:
-    // setiap baris log = 1 kesalahan, dikelompokkan per nama staff.
-    function computeRanksFromDetailLog(data) {
-      const counts = {};
-      data.forEach(item => {
-        const name = item.namaStaff;
-        if (!name) return;
-        counts[name] = (counts[name] || 0) + 1;
-      });
-      return Object.keys(counts).map(name => ({ namaStaff: name, total: counts[name] }));
-    }
-
     function renderDashboard(data) {
       document.getElementById("statTotal").textContent = data.length;
       document.getElementById("recordCount").textContent = `${data.length} Data`;
@@ -387,8 +375,8 @@
       const uniqueStaff = [...new Set(data.map(item => item.namaStaff).filter(Boolean))];
       document.getElementById("statStaffCount").textContent = uniqueStaff.length;
 
-      // Ranking mengikuti Detail Log Kesalahan: nama dengan kesalahan paling banyak di urutan teratas
-      let sortedRanks = computeRanksFromDetailLog(data);
+      // Ranking dibaca langsung dari kolom AL (Nama Staff) & AM (Total) di sheet TOP RANK
+      let sortedRanks = [...rankingData];
       sortedRanks.sort((a, b) => (parseInt(b.total) || 0) - (parseInt(a.total) || 0));
 
       document.getElementById("statTopStaff").textContent = sortedRanks.length > 0
@@ -410,7 +398,7 @@
               ${row.link && row.link !== '#' && row.link !== ''
                 ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer"
                      class="inline-flex items-center px-2.5 py-1 text-[10px] font-mono font-semibold text-black dark:text-white border border-black dark:border-white bg-white dark:bg-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition">
-                     KLIK INI ↗
+                     LIHAT ↗
                    </a>`
                 : `<span class="text-slate-300 dark:text-slate-600 font-semibold">-</span>`}
             </td>
