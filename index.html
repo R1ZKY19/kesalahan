@@ -54,11 +54,11 @@
     }
     .icon-pulse-ring { animation: pulse-glow 1.8s ease-in-out infinite; }
 
-    @keyframes float-y {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-3px); }
-    }
-    .icon-float { animation: float-y 2.4s ease-in-out infinite; }
+    /* Accordion PK: panah berputar saat dibuka */
+    details.pk-item > summary { list-style: none; cursor: pointer; }
+    details.pk-item > summary::-webkit-details-marker { display: none; }
+    details.pk-item .pk-chevron { transition: transform .15s ease; }
+    details.pk-item[open] .pk-chevron { transform: rotate(90deg); }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-200">
@@ -69,7 +69,7 @@
     <header class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-t-4 border-t-indigo-500 dark:border-t-indigo-400 px-4 sm:px-6 py-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-indigo-600 dark:text-indigo-400 uppercase">Laporan Internal · Operasional</p>
+          <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-indigo-600 dark:text-indigo-400 uppercase">Kesalahan CS SMB</p>
           <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1">
             <h1 id="currentSiteTitle" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white break-all">BANDAR80</h1>
             <span class="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 px-2 py-0.5">
@@ -77,7 +77,7 @@
               SYNC AKTIF
             </span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rekap kesalahan staff, diperbarui langsung dari sumber data · Sheet: KESALAHAN</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cek kesalahan situs mu di sini</p>
         </div>
 
         <!-- THEME SWITCH: Terang / Gelap -->
@@ -95,6 +95,30 @@
         </div>
       </div>
     </header>
+
+    <!-- PK PENILAIAN CS (dipindah paling atas, dibaca duluan) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="icon-wiggle inline-block text-lg">📋</span>
+          <div>
+            <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">PK Penilaian CS · Poin-Poin Kesalahan</h3>
+            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Klik tiap kategori untuk membuka rinciannya</p>
+          </div>
+        </div>
+        <span id="pkCountBadge" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick shrink-0">0 Kategori</span>
+      </div>
+
+      <!-- RINGKASAN BATAS WAKTU -->
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-amber-50/60 dark:bg-amber-500/5">
+        <p class="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 uppercase tracking-[0.15em] mb-2.5 flex items-center gap-1.5">
+          <span class="icon-pulse-ring inline-block">⏱️</span> Ringkasan Batas Waktu Penting
+        </p>
+        <div id="pkTimeSummary" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <div id="pkSections" class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 p-4"></div>
+    </div>
 
     <!-- FILTER BAR -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-5 py-4">
@@ -115,14 +139,23 @@
     </div>
 
     <!-- SITE RAIL -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-3">
-      <div class="flex items-center justify-between mb-2 px-1">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 sm:px-5 py-4">
+      <div class="flex items-center justify-between mb-3">
         <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em]">Situs / Brand</p>
         <span id="siteCountBadge" class="text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400">0 Situs</span>
       </div>
-      <div id="siteButtons" class="flex items-center gap-2 overflow-x-auto pb-1">
-        <p class="text-xs text-slate-400 dark:text-slate-500 py-2">Memuat daftar situs…</p>
+
+      <!-- Ketik untuk cari situs, biar tidak perlu scroll -->
+      <div class="relative mb-3">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path stroke-linecap="round" d="M21 21l-3.8-3.8"></path></svg>
+        <input type="text" id="siteSearchInput" oninput="filterSiteButtons()" placeholder="Ketik nama situs untuk mencari…"
+          class="w-full bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-xs font-semibold pl-9 pr-3.5 py-2.5 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 dark:focus:ring-indigo-500/30 transition">
       </div>
+
+      <div id="siteButtons" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 max-h-[280px] overflow-y-auto pr-1">
+        <p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-2">Memuat daftar situs…</p>
+      </div>
+      <p id="siteEmptyState" class="hidden text-xs text-slate-400 dark:text-slate-500 text-center py-4">Situs tidak ditemukan.</p>
     </div>
 
     <!-- KPI ROW -->
@@ -152,9 +185,14 @@
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col">
         <div class="shrink-0 flex justify-between items-center px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
           <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Detail Log Kesalahan</h3>
-          <span id="recordCount" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Data</span>
+          <div class="flex items-center gap-2">
+            <span class="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/15 px-1.5 py-0.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> HARI INI
+            </span>
+            <span id="recordCount" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Data</span>
+          </div>
         </div>
-        <div class="flex-1 min-h-[320px] sm:min-h-[420px] max-h-[640px] overflow-x-auto overflow-y-auto">
+        <div class="flex-1 min-h-[320px] sm:min-h-[420px] overflow-x-auto overflow-y-auto">
           <table class="w-full min-w-[720px] text-left border-collapse text-xs">
             <thead class="sticky top-0 bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800 z-10">
               <tr>
@@ -197,13 +235,13 @@
 
           <!-- LEGENDA TIER POTONGAN -->
           <div class="px-4 py-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-1.5">
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">0–25 AMAN</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400">26–40 · 15%</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">41–55 · 30%</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400">56–70 · 50%</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400">71–85 · 75%</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-red-700 text-white">&gt;85 · HABIS</span>
-            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-fuchsia-600 text-white">&gt;100 CS · RP5JT</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">0–25 AMAN</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400">26–40 · 15%</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">41–55 · 30%</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400">56–70 · 50%</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400">71–85 · 75%</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-red-700 text-white">&gt;85 · HABIS</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-1 bg-fuchsia-600 text-white">&gt;100 CS · RP5JT</span>
           </div>
         </div>
 
@@ -218,20 +256,6 @@
       </div>
     </div>
 
-    <!-- POIN-POIN KESALAHAN -->
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-      <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center gap-2.5">
-          <span class="icon-wiggle inline-block text-lg">📋</span>
-          <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Poin-Poin Kesalahan</h3>
-        </div>
-        <span id="poinCountBadge" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Poin</span>
-      </div>
-      <div id="poinList" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-4">
-        <p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center">Memuat daftar poin kesalahan…</p>
-      </div>
-    </div>
-
     <footer class="text-center text-[10px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-[0.15em] pt-2 pb-4">
       Data tersinkron otomatis dari Google Sheets
     </footer>
@@ -239,7 +263,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDkOoyv4-Y0pPR7lg8UuTR9mLcggs8ZP3bE2cj_LFpgo3hTFC9IjXsSV6DUJyV3Zud/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWpbioinHGE64Q8Z1a34W6JztHZjvZBGEn70CYZht0zVvomQCP2nQnTdMq8VW2RUD0/exec";
 
     const DEFAULT_SITES = [
       "BANDAR80", "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BOSJOKO",
@@ -253,9 +277,6 @@
     // sesuai staff CS di situs kamu (tidak case-sensitive).
     const CS_STAFF_NAMES = [];
 
-    // Ikon berputar untuk kartu Poin-Poin Kesalahan
-    const POIN_ICONS = ["⚠️", "❌", "🕐", "📵", "💬", "🔍", "🚫", "📌", "🧾", "🗂️", "⛔", "📎"];
-
     // Warna nama berputar untuk Ranking Kesalahan ("mencengkam" — tiap nama beda warna)
     const NAME_COLORS_LIGHT = [
       "text-rose-600", "text-orange-600", "text-amber-600", "text-lime-600",
@@ -268,9 +289,162 @@
       "dark:text-blue-400", "dark:text-indigo-400", "dark:text-violet-400", "dark:text-fuchsia-400", "dark:text-pink-400"
     ];
 
+    // ===================== PK PENILAIAN CS (statis, tidak ambil dari sheet) =====================
+    const PK_SECTIONS = [
+      { kode: "A", judul: "Kesalahan Respon & Ketelitian", items: [
+        { judul: "Salah Respon", ket: "Tidak melakukan pengecekan." },
+        { judul: "Tidak Teliti", ket: "Contoh: data telah dikirimkan oleh member, namun CS meminta kembali data tersebut." },
+        { judul: "Asal Spam PK", ket: "Contoh: ditanya (A), jawabannya (B)." },
+        { judul: "Salah Informasi", ket: "Informasi yang diberikan tidak sesuai." },
+        { judul: "Tidak Memahami Kendala", ket: "CS tidak memahami kendala yang disampaikan member." }
+      ]},
+      { kode: "B", judul: "Informasi yang Tidak Diperbolehkan Diberikan", items: [
+        { judul: "Minta ID Seputar Permainan", ket: "Meliputi: RTP, prediksi, hadiah permainan, discount permainan togel, promo bonus, jadwal result, minimal deposit & withdraw, slot gacor, jadwal bank, cara deposit & withdraw." }
+      ]},
+      { kode: "C", judul: "Kesalahan Fatal", items: [
+        { judul: "Tidak Memahami Permainan", ket: "Pengecekan lebih dari 12 menit tanpa kejelasan." },
+        { judul: "Tidak Respon Permainan", ket: "Lebih dari 5 menit." }
+      ]},
+      { kode: "D", judul: "Keamanan Data Member / PT", items: [
+        { judul: "Memberikan Data Penting ke Member", ket: "Tidak diperbolehkan: menginformasikan data member lain, memberikan info mutasi masuk, memberikan tampilan window, memberikan data penting PT." },
+        { judul: "Tidak Sopan", ket: "CS menggunakan bahasa atau sikap yang tidak sopan kepada member." },
+        { judul: "Ubah Data Tanpa Data Lengkap", ket: "Perubahan data tidak boleh dilakukan apabila data pendukung belum lengkap." },
+        { judul: "Reset Password Tanpa Persetujuan & Data Lengkap", ket: "Wajib nama dan nomor rekening." },
+        { judul: "Mempermainkan PL", ket: "Wajib meminta ID dan bukti pada jam pergantian hari." }
+      ]},
+      { kode: "E", judul: "Data Pendukung & Validasi", items: [
+        { judul: "Tidak Minta Data Pendukung", ket: "Contoh: reset password ID kedua dengan nama yang berbeda." },
+        { judul: "Tidak Melakukan Validasi", ket: "Meliputi: validasi dari bank pengirim WD, E-Wallet GoPay → Bank BCA/Mandiri, penambahan \"0\" pada nomor rekening PL." }
+      ]},
+      { kode: "F", judul: "Penutupan Percakapan", items: [
+        { judul: "Menutup Percakapan", ket: "Menutup percakapan sebelum kendala terselesaikan." }
+      ]},
+      { kode: "G", judul: "Data Rekening PT", items: [
+        { judul: "Mengirimkan Data Rekening PT di LC", ket: "Nomor rekening bank WD tidak boleh diberikan. Minta SS bukti chat dari CS Dana. Kecuali bank tujuan berketerangan \"Hubungi CS\"." }
+      ]},
+      { kode: "H", judul: "Indikator Bank", items: [
+        { judul: "Salah Indikator Bank", ket: "Salah melakukan update rekening tujuan pada form deposit." }
+      ]},
+      { kode: "I", judul: "Capslock", items: [
+        { judul: "Aturan Capslock", ket: "Capslock hanya diperbolehkan untuk nama-nama: Bank, Pasaran, Bonus, Situs." }
+      ]},
+      { kode: "J", judul: "Durasi Respon", items: [
+        { judul: "Tidak Respon", ket: "Maksimal 4 menit." },
+        { judul: "Telat Respon", ket: "Lebih dari 4 menit." },
+        { judul: "Telat Minta Maaf", ket: "Lebih dari 2 menit." },
+        { judul: "Tidak Respon Permainan (Fatal)", ket: "Lebih dari 5 menit." },
+        { judul: "Telat Respon Permainan", ket: "Lebih dari 6 menit." },
+        { judul: "Tidak Respon Pertanyaan", ket: "PL memberikan 2 pertanyaan, hanya terjawab 1 — pertanyaan berikutnya wajib dijawab maksimal 1 menit dari respon kendala pertama." }
+      ]},
+      { kode: "K", judul: "Tidak Membantu / Menyelesaikan Kendala Member", items: [
+        { judul: "Kurang Penjelasan / Informasi", ket: "Contoh: pihak ketiga tidak diperbolehkan, data verifikasi dana tidak lengkap, penjelasan ke PL sebanyak 3x (tidak termasuk penjelasan yang sama)." },
+        { judul: "Kendala Tidak Terselesaikan", ket: "Kendala tidak terselesaikan selama 20 menit pengecekan." }
+      ]},
+      { kode: "L", judul: "User ID", items: [
+        { judul: "Tidak Minta User ID", ket: "Contoh: banklist yang diset harus dihubungi CS." },
+        { judul: "Pengecekan Tanpa User ID", ket: "Tidak boleh melakukan pengecekan tanpa konfirmasi ID pada: deposit, withdraw, permainan." },
+        { judul: "Tidak Minta User ID untuk QRIS/Dana", ket: "User ID wajib diminta sebelum melakukan pengecekan." }
+      ]},
+      { kode: "M", judul: "View Previous Chat", items: [
+        { judul: "Perhatikan Percakapan Sebelumnya", ket: "Wajib memperhatikan percakapan sebelumnya agar tidak meminta data/informasi yang sudah diberikan member." }
+      ]},
+      { kode: "N", judul: "SS Admin / Turnover / Data Pemain", items: [
+        { judul: "SS Admin", ket: "Tidak diperbolehkan memberikan screenshot atau informasi internal admin." },
+        { judul: "Turnover / Data Pemain", ket: "Hanya diperbolehkan: history transaksi, antrian deposit/withdraw, kode agent." }
+      ]},
+      { kode: "O", judul: "Note", items: [
+        { judul: "Revisi PK", ket: "Setiap perubahan atau pembaruan ketentuan PK wajib dicatat." }
+      ]},
+      { kode: "P", judul: "Bahasa & Penulisan", items: [
+        { judul: "Bahasa Tidak Baku", ket: "Penggunaan bahasa yang tidak sesuai standar komunikasi CS." },
+        { judul: "Transfer Chat Perihal Permainan", ket: "Transfer chat kendala permainan ke CS lain tidak diperbolehkan." },
+        { judul: "Tanda Baca", ket: "Penggunaan tanda baca harus sesuai." },
+        { judul: "Emoticon", ket: "Penggunaan emoticon tidak diperbolehkan." }
+      ]},
+      { kode: "Q", judul: "Spam", items: [
+        { judul: "Spam Chat yang Sama", ket: "Balasan 1, 2, 3 harus berbeda kalimat — balasan ke-4 baru boleh mengulang kata dari balasan pertama." },
+        { judul: "Yang Tidak Termasuk Spam", ket: "Minta ID & bukti, antrian & mutasi tercetak, deposit & withdraw berhasil." }
+      ]},
+      { kode: "R", judul: "Note Pengecekan Tidak Berujung", items: [
+        { judul: "Setelah Respon Pengecekan", ket: "Wajib memberikan perkembangan dalam waktu maksimal 5 menit." },
+        { judul: "Pengecekan di Atas 20 Menit", ket: "Dikategorikan tidak menyelesaikan kendala jika pengecekan berlangsung lebih dari 20 menit tanpa penyelesaian jelas." }
+      ]},
+      { kode: "S", judul: "Perubahan Data", items: [
+        { judul: "Bank → Bank", ket: "Validasi nama rekening wajib sesuai." },
+        { judul: "Bank → E-Wallet", ket: "Tidak diperbolehkan, kecuali member salah daftar jenis bank dan rekening awal tidak valid." },
+        { judul: "E-Wallet → Bank", ket: "Validasi nama rekening wajib sesuai." },
+        { judul: "E-Wallet → E-Wallet", ket: "WD pertama tidak valid — wajib konfirmasi SS profile untuk memastikan nama akun E-Wallet (tidak termasuk pergantian total nama & nomor)." },
+        { judul: "Kendala Terblokir → Hanya Ganti Jenis", ket: "Pastikan nomor lama tidak valid/aktif, wajib konfirmasi SS profile." },
+        { judul: "Kendala Nomor Sudah Ganti → Hanya Ganti Nomor", ket: "Pastikan nomor lama tidak valid/aktif, wajib konfirmasi SS profile; jika sudah pernah WD, wajib konfirmasi KTP tanpa mempersulit member." },
+        { judul: "Ganti Nomor & Jenis E-Wallet", ket: "Jika tidak ada kendala dan rekening masih aktif, arahkan member daftar akun baru." }
+      ]},
+      { kode: "T", judul: "Validasi E-Wallet", items: [
+        { judul: "DANA", ket: "Wajib dari 2 bank berbeda: BCA, CIMB." },
+        { judul: "OVO", ket: "Wajib dari 2 bank berbeda: BCA, CIMB." },
+        { judul: "LinkAja", ket: "Wajib dari 2 bank berbeda: BCA, CIMB." },
+        { judul: "GoPay", ket: "Wajib dari: BCA, Mandiri." }
+      ]},
+      { kode: "U", judul: "E-Wallet Limit", items: [
+        { judul: "E-Wallet Limit", ket: "Wajib sarankan member menggunakan rekening bank." }
+      ]},
+      { kode: "V", judul: "Pergantian / Pengalihan Jenis E-Wallet", items: [
+        { judul: "Pengalihan Jenis E-Wallet", ket: "Bantu proses tanpa mengganti data. Tidak perlu data pendukung jika hanya perubahan jenis E-Wallet — nama & nomor rekening harus sama." }
+      ]},
+      { kode: "W", judul: "Pergantian Nomor & Jenis E-Wallet", items: [
+        { judul: "Pergantian Nomor & Jenis E-Wallet", ket: "Wajib meminta data pendukung: SS profile lama & SS profile baru." }
+      ]}
+    ];
+
+    const PK_TIME_SUMMARY = [
+      { label: "Telat minta maaf", nilai: "2 menit" },
+      { label: "Tidak respon", nilai: "4 menit" },
+      { label: "Telat respon", nilai: "4 menit" },
+      { label: "Tidak respon permainan (Fatal)", nilai: "5 menit" },
+      { label: "Telat respon permainan", nilai: "6 menit" },
+      { label: "Pengecekan >12 menit tanpa kejelasan", nilai: "FATAL" },
+      { label: "Pengecekan >20 menit tanpa penyelesaian", nilai: "Tidak selesai" },
+      { label: "Tidak respon pertanyaan", nilai: "maks. 1 menit" }
+    ];
+
+    const PK_BORDER_COLORS = [
+      "border-l-rose-400", "border-l-orange-400", "border-l-amber-400", "border-l-lime-400",
+      "border-l-emerald-400", "border-l-teal-400", "border-l-cyan-400", "border-l-sky-400",
+      "border-l-indigo-400", "border-l-violet-400", "border-l-fuchsia-400", "border-l-pink-400"
+    ];
+
+    function renderPKSections() {
+      document.getElementById("pkCountBadge").textContent = `${PK_SECTIONS.length} Kategori`;
+
+      document.getElementById("pkTimeSummary").innerHTML = PK_TIME_SUMMARY.map(t => `
+        <span class="text-[10px] font-mono font-bold px-2 py-1 bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300">
+          ${t.label}: ${t.nilai}
+        </span>
+      `).join('');
+
+      document.getElementById("pkSections").innerHTML = PK_SECTIONS.map((section, idx) => {
+        const border = PK_BORDER_COLORS[idx % PK_BORDER_COLORS.length];
+        const itemsHtml = section.items.map(it => `
+          <div class="pl-3 py-2 border-l-2 border-slate-200 dark:border-slate-700">
+            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">${it.judul}</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">${it.ket}</p>
+          </div>
+        `).join('');
+
+        return `
+          <details class="pk-item bg-slate-50/60 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 border-l-4 ${border}">
+            <summary class="flex items-center gap-2.5 px-3.5 py-2.5 select-none">
+              <svg class="pk-chevron w-3 h-3 shrink-0 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+              <span class="shrink-0 w-5 h-5 flex items-center justify-center text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">${section.kode}</span>
+              <span class="text-xs font-bold text-slate-800 dark:text-slate-100">${section.judul}</span>
+            </summary>
+            <div class="px-3.5 pb-3 space-y-1.5">${itemsHtml}</div>
+          </details>
+        `;
+      }).join('');
+    }
+
     let allData = [];
     let rankingData = [];
-    let poinKesalahanData = [];
     let currentSite = "BANDAR80";
     let listOfSites = [];
 
@@ -333,6 +507,23 @@
       return NAME_COLORS_LIGHT[i] + " " + NAME_COLORS_DARK[i];
     }
 
+    // ===== DETEKSI "HARI INI" (robust terhadap format tanggal dari sheet) =====
+    function parseDateParts(str) {
+      if (!str) return null;
+      var cleaned = String(str).replace(/[^0-9\/\-]/g, "");
+      var m = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+      if (!m) return null;
+      var day = parseInt(m[1], 10), month = parseInt(m[2], 10), year = parseInt(m[3], 10);
+      if (year < 100) year += 2000;
+      return { day: day, month: month, year: year };
+    }
+    function isToday(str) {
+      var parts = parseDateParts(str);
+      if (!parts) return false;
+      var now = new Date();
+      return parts.day === now.getDate() && parts.month === (now.getMonth() + 1) && parts.year === now.getFullYear();
+    }
+
     async function loadData() {
       try {
         const response = await fetch(SCRIPT_URL);
@@ -347,7 +538,6 @@
 
         allData = result.data || [];
         rankingData = result.ranking || [];
-        poinKesalahanData = result.poinKesalahan || [];
         currentSite = result.currentSite || "BANDAR80";
 
         document.getElementById("currentSiteTitle").textContent = currentSite;
@@ -359,7 +549,6 @@
         renderSiteButtonStyles(currentSite);
 
         populateDateDropdown(allData);
-        renderPoinList();
         filterData();
       } catch (err) {
         console.error("Gagal mengambil data:", err);
@@ -394,28 +583,60 @@
       });
     }
 
+    const SITE_ACCENT_COLORS = [
+      "border-l-rose-400", "border-l-orange-400", "border-l-amber-400", "border-l-lime-400",
+      "border-l-emerald-400", "border-l-teal-400", "border-l-cyan-400", "border-l-sky-400",
+      "border-l-indigo-400", "border-l-violet-400", "border-l-fuchsia-400", "border-l-pink-400"
+    ];
+
+    function siteIdleClass(idx) {
+      const accent = SITE_ACCENT_COLORS[idx % SITE_ACCENT_COLORS.length];
+      return `site-tab flex items-center justify-center text-center px-3 py-3 border border-slate-200 dark:border-slate-700 border-l-4 ${accent} bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-pointer`;
+    }
+    function siteActiveClass() {
+      return `site-tab flex items-center justify-center text-center px-3 py-3 border border-indigo-600 dark:border-indigo-400 border-l-4 border-l-indigo-300 dark:border-l-indigo-200 bg-gradient-to-br from-indigo-600 to-indigo-500 dark:from-indigo-500 dark:to-indigo-400 shadow-md shadow-indigo-500/20 -translate-y-0.5 transition-all duration-150 cursor-pointer`;
+    }
+
     function renderSiteButtons(sites) {
       const container = document.getElementById("siteButtons");
       document.getElementById("siteCountBadge").textContent = `${sites.length} Situs`;
 
-      container.innerHTML = sites.map(site => `
-        <button id="btn-${site.replace(/\s+/g, '-')}" onclick="selectSite('${site}')"
-          class="site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100">
-          ${site}
+      container.innerHTML = sites.map((site, idx) => `
+        <button id="btn-${site.replace(/\s+/g, '-')}" data-site="${site.toLowerCase()}" onclick="selectSite('${site}')"
+          class="${siteIdleClass(idx)}">
+          <span class="font-display font-bold text-xs tracking-wide text-slate-700 dark:text-slate-200 truncate">${site}</span>
         </button>
       `).join('');
     }
 
     function renderSiteButtonStyles(activeSite) {
       const allButtons = document.querySelectorAll(".site-tab");
-      allButtons.forEach(btn => {
-        btn.className = "site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100";
+      allButtons.forEach((btn, idx) => {
+        btn.className = siteIdleClass(idx);
+        const label = btn.querySelector("span");
+        if (label) label.className = "font-display font-bold text-xs tracking-wide text-slate-700 dark:text-slate-200 truncate";
       });
 
       const activeBtn = document.getElementById(`btn-${activeSite.replace(/\s+/g, '-')}`);
       if (activeBtn) {
-        activeBtn.className = "site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-bold tracking-wide border border-indigo-600 dark:border-indigo-400 bg-indigo-600 dark:bg-indigo-500 text-white";
+        activeBtn.className = siteActiveClass();
+        const label = activeBtn.querySelector("span");
+        if (label) label.className = "font-display font-bold text-xs tracking-wide text-white truncate";
       }
+    }
+
+    function filterSiteButtons() {
+      const keyword = document.getElementById("siteSearchInput").value.toLowerCase().trim();
+      const buttons = document.querySelectorAll("#siteButtons .site-tab");
+      let visibleCount = 0;
+
+      buttons.forEach(btn => {
+        const match = !keyword || (btn.dataset.site || "").includes(keyword);
+        btn.classList.toggle("hidden", !match);
+        if (match) visibleCount++;
+      });
+
+      document.getElementById("siteEmptyState").classList.toggle("hidden", visibleCount !== 0);
     }
 
     async function selectSite(siteName) {
@@ -440,10 +661,8 @@
 
         allData = result.data || [];
         rankingData = result.ranking || [];
-        poinKesalahanData = result.poinKesalahan || [];
 
         populateDateDropdown(allData);
-        renderPoinList();
         filterData();
       } catch (err) {
         console.error("Gagal memilih situs:", err);
@@ -492,15 +711,21 @@
         ? `${sortedRanks[0].namaStaff} (${sortedRanks[0].total})`
         : "-";
 
-      // 1. DETAIL LOG TABLE
+      // 1. DETAIL LOG TABLE — baris tanggal hari ini disorot beda warna
       const detailTbody = document.getElementById("detailTable");
       if (data.length === 0) {
         detailTbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400 dark:text-slate-500">Tidak ada log kesalahan ditemukan.</td></tr>`;
       } else {
-        detailTbody.innerHTML = data.map(row => `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition duration-100">
+        detailTbody.innerHTML = data.map(row => {
+          const today = isToday(row.tanggal);
+          const rowCls = today ? "bg-amber-50 dark:bg-amber-500/10" : "";
+          const dateCls = today ? "text-amber-700 dark:text-amber-300 font-bold" : "text-slate-500 dark:text-slate-400";
+          const todayBadge = today ? ' <span class="ml-1 inline-block text-[9px] font-sans font-bold px-1 py-0.5 bg-amber-500 text-white">HARI INI</span>' : '';
+
+          return `
+          <tr class="${rowCls} hover:bg-slate-50 dark:hover:bg-slate-800/60 transition duration-100">
             <td class="px-5 py-3 font-semibold text-slate-800 dark:text-slate-100">${row.namaStaff || '-'}</td>
-            <td class="px-3 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono text-[11px]">${row.tanggal || '-'}</td>
+            <td class="px-3 py-3 whitespace-nowrap font-mono text-[11px] ${dateCls}">${row.tanggal || '-'}${todayBadge}</td>
             <td class="px-3 py-3 text-slate-600 dark:text-slate-300">${row.keterangan || '-'}</td>
             <td class="px-3 py-3 text-indigo-600 dark:text-indigo-400 font-mono text-[11px] font-semibold">${row.kodeId || '-'}</td>
             <td class="px-5 py-3 text-center">
@@ -512,10 +737,11 @@
                 : `<span class="text-slate-300 dark:text-slate-600 font-semibold">-</span>`}
             </td>
           </tr>
-        `).join('');
+        `;
+        }).join('');
       }
 
-      // 2. RANKING LEADERBOARD — tiap nama warna berbeda + badge tier potongan
+      // 2. RANKING LEADERBOARD — tiap nama warna berbeda + badge tier potongan (diperbesar)
       const rankTbody = document.getElementById("rankTable");
       if (!sortedRanks || sortedRanks.length === 0) {
         rankTbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 dark:text-slate-500">Tidak ada ranking.</td></tr>`;
@@ -537,7 +763,7 @@
               <td class="px-2 py-2.5 font-bold text-xs ${nameCls}">${item.namaStaff}</td>
               <td class="px-2 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white text-xs">${item.total}</td>
               <td class="px-3 py-2.5 text-right">
-                <span class="inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 ${tier.badge}">${tier.label}</span>
+                <span class="inline-block text-xs font-mono font-extrabold px-2.5 py-1 ${tier.badge}">${tier.label}</span>
               </td>
             </tr>
           `;
@@ -571,37 +797,7 @@
       }
     }
 
-    // 4. POIN-POIN KESALAHAN (referensi kategori kesalahan dari sheet, A1:C113)
-    function renderPoinList() {
-      const container = document.getElementById("poinList");
-      document.getElementById("poinCountBadge").textContent = `${poinKesalahanData.length} Poin`;
-
-      if (!poinKesalahanData || poinKesalahanData.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center">Belum ada data poin kesalahan.</p>`;
-        return;
-      }
-
-      const borderColors = [
-        "border-l-rose-400", "border-l-orange-400", "border-l-amber-400", "border-l-lime-400",
-        "border-l-emerald-400", "border-l-teal-400", "border-l-cyan-400", "border-l-sky-400",
-        "border-l-indigo-400", "border-l-violet-400", "border-l-fuchsia-400", "border-l-pink-400"
-      ];
-
-      container.innerHTML = poinKesalahanData.map((item, idx) => {
-        const icon = POIN_ICONS[idx % POIN_ICONS.length];
-        const border = borderColors[idx % borderColors.length];
-        return `
-          <div class="flex gap-3 p-3.5 border border-slate-200 dark:border-slate-800 border-l-4 ${border} bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-            <span class="icon-float shrink-0 text-lg leading-none mt-0.5">${icon}</span>
-            <div class="min-w-0">
-              <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">${item.poin}</p>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">${item.keterangan}</p>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
+    renderPKSections();
     loadData();
   </script>
 </body>
