@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laporan Operasional — Staff Monitoring</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            display: ['Manrope', 'sans-serif'],
+            display: ['Sora', 'sans-serif'],
             sans: ['Inter', 'sans-serif'],
             mono: ['IBM Plex Mono', 'monospace']
           }
@@ -20,86 +21,97 @@
     }
   </script>
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #F4F5F7; }
-    .ledger-bg {
-      background-image: linear-gradient(#E7E9EE 1px, transparent 1px);
-      background-size: 100% 42px;
-      background-position: 0 8px;
-    }
-    .paper {
-      background: #FFFFFF;
-      border: 1px solid #E2E4E9;
-    }
-    .rule { border-color: #DADDE3; }
+    body { font-family: 'Inter', sans-serif; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #C7CBD3; border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #3F4653; }
     .site-tab { transition: all .12s ease; }
     .tick { font-variant-numeric: tabular-nums; }
+    select.clean-select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.7rem center;
+      background-size: 14px;
+    }
   </style>
 </head>
-<body class="text-slate-900 antialiased">
+<body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 antialiased transition-colors duration-200">
 
   <div class="max-w-[1400px] mx-auto px-5 lg:px-8 py-6 space-y-5">
 
     <!-- MASTHEAD -->
-    <header class="paper rounded-none border-t-4 border-t-black px-6 py-5">
+    <header class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 border-t-4 border-t-black dark:border-t-white px-6 py-5">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-black uppercase">Laporan Internal · Operasional</p>
-          <div class="flex items-baseline gap-3 mt-1">
-            <h1 id="currentSiteTitle" class="font-display text-3xl font-extrabold tracking-tight text-black">BANDAR80</h1>
-            <span class="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold text-black bg-white border border-black px-2 py-0.5">
-              <span class="w-1.5 h-1.5 bg-black rounded-full"></span>
-              SYNC AKTIF
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 mt-1">Rekap kesalahan staff, diperbarui langsung dari sumber data · Sheet: KESALAHAN</p>
-        </div>
-
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
-          <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2.5">
-            <label for="dateSelect" class="text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">Periode</label>
-            <select id="dateSelect" onchange="filterData()" class="bg-transparent text-xs font-semibold text-slate-800 focus:outline-none cursor-pointer">
-              <option value="ALL">Semua Tanggal</option>
-            </select>
-          </div>
-          <div class="w-full sm:w-72">
-            <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff, keterangan, kode ID…"
-              class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 text-xs px-3.5 py-2.5 border border-slate-200 focus:outline-none focus:border-black focus:ring-1 focus:ring-slate-300 transition">
+        <div class="flex items-start gap-4">
+          <button id="themeToggle" onclick="toggleTheme()" aria-label="Ganti tema"
+            class="shrink-0 w-10 h-10 flex items-center justify-center border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition">
+            <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path stroke-linecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+            <svg id="iconMoon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+          </button>
+          <div>
+            <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-black dark:text-white uppercase">Laporan Internal · Operasional</p>
+            <div class="flex items-baseline gap-3 mt-1">
+              <h1 id="currentSiteTitle" class="font-display text-3xl font-extrabold tracking-tight text-black dark:text-white">BANDAR80</h1>
+              <span class="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white px-2 py-0.5">
+                <span class="w-1.5 h-1.5 bg-black dark:bg-white rounded-full"></span>
+                SYNC AKTIF
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rekap kesalahan staff, diperbarui langsung dari sumber data · Sheet: KESALAHAN</p>
           </div>
         </div>
       </div>
     </header>
 
+    <!-- FILTER BAR -->
+    <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="dateSelect" class="block text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-1.5">Periode Tanggal</label>
+          <select id="dateSelect" onchange="filterData()"
+            class="clean-select w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs font-semibold px-3.5 py-2.5 pr-8 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-black dark:focus:border-white cursor-pointer">
+            <option value="ALL">Semua Tanggal</option>
+          </select>
+        </div>
+        <div>
+          <label for="searchInput" class="block text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-1.5">Pencarian</label>
+          <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama staff, keterangan, kode ID…"
+            class="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-xs px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-black dark:focus:border-white focus:ring-1 focus:ring-slate-300 dark:focus:ring-slate-600 transition">
+        </div>
+      </div>
+    </div>
+
     <!-- SITE RAIL -->
-    <div class="paper px-4 py-3">
+    <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-4 py-3">
       <div class="flex items-center justify-between mb-2 px-1">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-[0.15em]">Situs / Brand</p>
-        <span id="siteCountBadge" class="text-[10px] font-mono font-semibold text-slate-500">0 Situs</span>
+        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em]">Situs / Brand</p>
+        <span id="siteCountBadge" class="text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400">0 Situs</span>
       </div>
       <div id="siteButtons" class="flex items-center gap-2 overflow-x-auto pb-1">
-        <p class="text-xs text-slate-400 py-2">Memuat daftar situs…</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 py-2">Memuat daftar situs…</p>
       </div>
     </div>
 
     <!-- KPI ROW -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="paper px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wide">Total Kesalahan</p>
-        <p id="statTotal" class="tick font-display text-2xl font-extrabold text-slate-900 mt-1.5">0</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
+        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Total Kesalahan</p>
+        <p id="statTotal" class="tick font-display text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
       </div>
-      <div class="paper px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wide">Staff Terlibat</p>
-        <p id="statStaffCount" class="tick font-display text-2xl font-extrabold text-slate-900 mt-1.5">0</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
+        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Staff Terlibat</p>
+        <p id="statStaffCount" class="tick font-display text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
       </div>
-      <div class="paper px-5 py-4 border-l-2 border-l-black">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wide">Kesalahan Terbanyak</p>
-        <p id="statTopStaff" class="font-display text-base font-bold text-black mt-1.5 truncate">-</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4 border-l-2 border-l-black dark:border-l-white">
+        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Kesalahan Terbanyak</p>
+        <p id="statTopStaff" class="font-display text-base font-bold text-black dark:text-white mt-1.5 truncate">-</p>
       </div>
-      <div class="paper px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wide">Filter Tanggal</p>
-        <p id="statActiveDate" class="font-display text-base font-bold text-black mt-1.5 truncate">SEMUA TANGGAL</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
+        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Filter Tanggal</p>
+        <p id="statActiveDate" class="font-display text-base font-bold text-black dark:text-white mt-1.5 truncate">SEMUA TANGGAL</p>
       </div>
     </div>
 
@@ -107,14 +119,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
       <!-- DETAIL LOG -->
-      <div class="lg:col-span-2 paper">
-        <div class="flex justify-between items-center px-5 py-3.5 border-b rule">
-          <h3 class="text-xs font-mono font-bold text-slate-600 uppercase tracking-[0.15em]">Detail Log Kesalahan</h3>
-          <span id="recordCount" class="text-[10px] font-mono font-semibold text-slate-400 tick">0 Data</span>
+      <div class="lg:col-span-2 bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800">
+        <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
+          <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Detail Log Kesalahan</h3>
+          <span id="recordCount" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Data</span>
         </div>
         <div class="overflow-x-auto max-h-[540px] overflow-y-auto">
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="sticky top-0 bg-white text-slate-400 uppercase tracking-wider font-mono font-semibold border-b rule z-10">
+            <thead class="sticky top-0 bg-white dark:bg-[#0A0A0A] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800 z-10">
               <tr>
                 <th class="px-5 py-2.5 font-medium">Nama Staff</th>
                 <th class="px-3 py-2.5 font-medium">Tanggal</th>
@@ -123,8 +135,8 @@
                 <th class="px-5 py-2.5 font-medium text-center">Bukti</th>
               </tr>
             </thead>
-            <tbody id="detailTable" class="divide-y divide-slate-100 text-slate-700">
-              <tr><td colspan="5" class="p-10 text-center text-slate-400">Memuat data…</td></tr>
+            <tbody id="detailTable" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <tr><td colspan="5" class="p-10 text-center text-slate-400 dark:text-slate-500">Memuat data…</td></tr>
             </tbody>
           </table>
         </div>
@@ -134,37 +146,37 @@
       <div class="space-y-5">
 
         <!-- RANKING -->
-        <div class="paper">
-          <div class="flex items-center justify-between px-5 py-3.5 border-b rule">
-            <h3 class="text-xs font-mono font-bold text-slate-600 uppercase tracking-[0.15em]">Ranking Kesalahan</h3>
-            <span class="text-[9px] font-mono font-semibold text-slate-400 border border-slate-200 px-1.5 py-0.5">DARI LOG</span>
+        <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800">
+          <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
+            <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Ranking Kesalahan</h3>
+            <span class="text-[9px] font-mono font-semibold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5">DARI LOG</span>
           </div>
           <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-50 text-slate-400 uppercase tracking-wider font-mono font-semibold border-b rule">
+            <thead class="bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th class="px-4 py-2 font-medium w-10 text-center">#</th>
                 <th class="px-2 py-2 font-medium">Nama Staff</th>
                 <th class="px-4 py-2 font-medium text-right">Total</th>
               </tr>
             </thead>
-            <tbody id="rankTable" class="divide-y divide-slate-100 text-slate-700">
-              <tr><td colspan="3" class="p-6 text-center text-slate-400">Memuat ranking…</td></tr>
+            <tbody id="rankTable" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <tr><td colspan="3" class="p-6 text-center text-slate-400 dark:text-slate-500">Memuat ranking…</td></tr>
             </tbody>
           </table>
         </div>
 
         <!-- LOAD DISTRIBUTION -->
-        <div class="paper px-5 py-4">
-          <h3 class="text-xs font-mono font-bold text-slate-600 uppercase tracking-[0.15em] mb-4">Distribusi Beban Kesalahan</h3>
+        <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
+          <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em] mb-4">Distribusi Beban Kesalahan</h3>
           <div id="summaryList" class="space-y-3 max-h-[230px] overflow-y-auto pr-1">
-            <p class="text-xs text-slate-400 py-4">Memuat rekap…</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 py-4">Memuat rekap…</p>
           </div>
         </div>
 
       </div>
     </div>
 
-    <footer class="text-center text-[10px] font-mono text-slate-400 uppercase tracking-[0.15em] pt-2 pb-4">
+    <footer class="text-center text-[10px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-[0.15em] pt-2 pb-4">
       Data tersinkron otomatis dari Google Sheets
     </footer>
 
@@ -185,6 +197,22 @@
     let currentSite = "BANDAR80";
     let listOfSites = [];
 
+    // ===== THEME (gelap/terang) =====
+    function applyThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('iconSun').classList.toggle('hidden', !isDark);
+      document.getElementById('iconMoon').classList.toggle('hidden', isDark);
+    }
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      applyThemeIcons();
+    }
+    (function initTheme() {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) document.documentElement.classList.add('dark');
+      applyThemeIcons();
+    })();
+
     async function loadData() {
       try {
         const response = await fetch(SCRIPT_URL);
@@ -192,7 +220,7 @@
 
         if (result.error) {
           document.getElementById("detailTable").innerHTML = `
-            <tr><td colspan="5" class="p-10 text-center text-black font-bold">${result.error}</td></tr>
+            <tr><td colspan="5" class="p-10 text-center text-black dark:text-white font-semibold">${result.error}</td></tr>
           `;
           return;
         }
@@ -223,7 +251,15 @@
       const dateSelect = document.getElementById("dateSelect");
       if (!dateSelect) return;
 
+      // Urutkan tanggal supaya rapi di dropdown
       const dates = [...new Set(data.map(item => item.tanggal).filter(Boolean))];
+      dates.sort((a, b) => {
+        const da = new Date(a.split('/').reverse().join('-'));
+        const db = new Date(b.split('/').reverse().join('-'));
+        if (isNaN(da) || isNaN(db)) return a.localeCompare(b);
+        return db - da;
+      });
+
       const currentSelected = dateSelect.value;
 
       dateSelect.innerHTML = '<option value="ALL">Semua Tanggal</option>';
@@ -242,7 +278,7 @@
 
       container.innerHTML = sites.map(site => `
         <button id="btn-${site.replace(/\s+/g, '-')}" onclick="selectSite('${site}')"
-          class="site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+          class="site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100">
           ${site}
         </button>
       `).join('');
@@ -251,12 +287,12 @@
     function renderSiteButtonStyles(activeSite) {
       const allButtons = document.querySelectorAll(".site-tab");
       allButtons.forEach(btn => {
-        btn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800";
+        btn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100";
       });
 
       const activeBtn = document.getElementById(`btn-${activeSite.replace(/\s+/g, '-')}`);
       if (activeBtn) {
-        activeBtn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-bold tracking-wide border border-black bg-black text-white";
+        activeBtn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-bold tracking-wide border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black";
       }
     }
 
@@ -266,7 +302,7 @@
       renderSiteButtonStyles(siteName);
 
       document.getElementById("detailTable").innerHTML = `
-        <tr><td colspan="5" class="p-10 text-center text-black font-semibold">Memuat data untuk "${siteName}"…</td></tr>
+        <tr><td colspan="5" class="p-10 text-center text-black dark:text-white font-semibold">Memuat data untuk "${siteName}"…</td></tr>
       `;
 
       try {
@@ -275,7 +311,7 @@
 
         if (result.error) {
           document.getElementById("detailTable").innerHTML = `
-            <tr><td colspan="5" class="p-10 text-center text-black font-bold">${result.error}</td></tr>
+            <tr><td colspan="5" class="p-10 text-center text-black dark:text-white font-bold">${result.error}</td></tr>
           `;
           return;
         }
@@ -288,7 +324,7 @@
       } catch (err) {
         console.error("Gagal memilih situs:", err);
         document.getElementById("detailTable").innerHTML = `
-          <tr><td colspan="5" class="p-10 text-center text-black font-bold">Gagal terhubung ke Google Sheets.</td></tr>
+          <tr><td colspan="5" class="p-10 text-center text-black dark:text-white font-bold">Gagal terhubung ke Google Sheets.</td></tr>
         `;
       }
     }
@@ -317,7 +353,8 @@
       renderDashboard(filtered);
     }
 
-    // Hitung ranking langsung dari Detail Log yang sedang tampil (bukan dari sheet ranking terpisah)
+    // Ranking dihitung langsung dari Detail Log yang sedang tampil:
+    // setiap baris log = 1 kesalahan, dikelompokkan per nama staff.
     function computeRanksFromDetailLog(data) {
       const counts = {};
       data.forEach(item => {
@@ -335,7 +372,7 @@
       const uniqueStaff = [...new Set(data.map(item => item.namaStaff).filter(Boolean))];
       document.getElementById("statStaffCount").textContent = uniqueStaff.length;
 
-      // Ranking mengikuti Detail Log Kesalahan: urut dari yang terbanyak
+      // Ranking mengikuti Detail Log Kesalahan: nama dengan kesalahan paling banyak di urutan teratas
       let sortedRanks = computeRanksFromDetailLog(data);
       sortedRanks.sort((a, b) => (parseInt(b.total) || 0) - (parseInt(a.total) || 0));
 
@@ -346,21 +383,21 @@
       // 1. DETAIL LOG TABLE
       const detailTbody = document.getElementById("detailTable");
       if (data.length === 0) {
-        detailTbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400">Tidak ada log kesalahan ditemukan.</td></tr>`;
+        detailTbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400 dark:text-slate-500">Tidak ada log kesalahan ditemukan.</td></tr>`;
       } else {
         detailTbody.innerHTML = data.map(row => `
-          <tr class="hover:bg-slate-50 transition duration-100">
-            <td class="px-5 py-3 font-semibold text-slate-800">${row.namaStaff || '-'}</td>
-            <td class="px-3 py-3 text-slate-500 whitespace-nowrap font-mono text-[11px]">${row.tanggal || '-'}</td>
-            <td class="px-3 py-3 text-slate-600">${row.keterangan || '-'}</td>
-            <td class="px-3 py-3 text-black font-mono text-[11px] font-semibold">${row.kodeId || '-'}</td>
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-900 transition duration-100">
+            <td class="px-5 py-3 font-semibold text-slate-800 dark:text-slate-100">${row.namaStaff || '-'}</td>
+            <td class="px-3 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono text-[11px]">${row.tanggal || '-'}</td>
+            <td class="px-3 py-3 text-slate-600 dark:text-slate-300">${row.keterangan || '-'}</td>
+            <td class="px-3 py-3 text-black dark:text-white font-mono text-[11px] font-semibold">${row.kodeId || '-'}</td>
             <td class="px-5 py-3 text-center">
               ${row.link && row.link !== '#' && row.link !== ''
                 ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer"
-                     class="inline-flex items-center px-2.5 py-1 text-[10px] font-mono font-semibold text-black border border-black bg-white hover:bg-black hover:text-white transition">
+                     class="inline-flex items-center px-2.5 py-1 text-[10px] font-mono font-semibold text-black dark:text-white border border-black dark:border-white bg-white dark:bg-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition">
                      LIHAT ↗
                    </a>`
-                : `<span class="text-slate-300 font-semibold">-</span>`}
+                : `<span class="text-slate-300 dark:text-slate-600 font-semibold">-</span>`}
             </td>
           </tr>
         `).join('');
@@ -369,26 +406,26 @@
       // 2. RANKING LEADERBOARD
       const rankTbody = document.getElementById("rankTable");
       if (!sortedRanks || sortedRanks.length === 0) {
-        rankTbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400">Tidak ada ranking.</td></tr>`;
+        rankTbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 dark:text-slate-500">Tidak ada ranking.</td></tr>`;
       } else {
         rankTbody.innerHTML = sortedRanks.map((item, idx) => {
-          let badge = `<span class="font-mono text-slate-400">${String(idx + 1).padStart(2, '0')}</span>`;
+          let badge = `<span class="font-mono text-slate-400 dark:text-slate-500">${String(idx + 1).padStart(2, '0')}</span>`;
           let rowClass = "";
 
           if (idx === 0) {
-            badge = `<span class="font-mono font-bold text-black">01</span>`;
-            rowClass = "bg-slate-100 border-l-2 border-l-black";
+            badge = `<span class="font-mono font-bold text-black dark:text-white">01</span>`;
+            rowClass = "bg-slate-100 dark:bg-slate-900 border-l-2 border-l-black dark:border-l-white";
           } else if (idx === 1) {
-            badge = `<span class="font-mono font-bold text-slate-600">02</span>`;
+            badge = `<span class="font-mono font-bold text-slate-600 dark:text-slate-300">02</span>`;
           } else if (idx === 2) {
-            badge = `<span class="font-mono font-bold text-slate-600">03</span>`;
+            badge = `<span class="font-mono font-bold text-slate-600 dark:text-slate-300">03</span>`;
           }
 
           return `
-            <tr class="${rowClass} hover:bg-slate-50 transition duration-100">
+            <tr class="${rowClass} hover:bg-slate-50 dark:hover:bg-slate-900 transition duration-100">
               <td class="px-4 py-2.5 text-center text-xs">${badge}</td>
-              <td class="px-2 py-2.5 font-semibold text-slate-800 text-xs">${item.namaStaff}</td>
-              <td class="px-4 py-2.5 text-right font-mono font-bold text-slate-900 text-xs">${item.total}</td>
+              <td class="px-2 py-2.5 font-semibold text-slate-800 dark:text-slate-100 text-xs">${item.namaStaff}</td>
+              <td class="px-4 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white text-xs">${item.total}</td>
             </tr>
           `;
         }).join('');
@@ -399,7 +436,7 @@
       const maxVal = sortedRanks.length > 0 ? parseInt(sortedRanks[0].total) || 1 : 1;
 
       if (!sortedRanks || sortedRanks.length === 0) {
-        summaryList.innerHTML = `<p class="text-xs text-slate-400 py-4">Tidak ada data rekap.</p>`;
+        summaryList.innerHTML = `<p class="text-xs text-slate-400 dark:text-slate-500 py-4">Tidak ada data rekap.</p>`;
       } else {
         summaryList.innerHTML = sortedRanks.slice(0, 15).map(item => {
           const count = parseInt(item.total) || 0;
@@ -407,11 +444,11 @@
           return `
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
-                <span class="font-semibold text-slate-700">${item.namaStaff}</span>
-                <span class="font-mono font-semibold text-slate-500">${count}</span>
+                <span class="font-semibold text-slate-700 dark:text-slate-200">${item.namaStaff}</span>
+                <span class="font-mono font-semibold text-slate-500 dark:text-slate-400">${count}</span>
               </div>
-              <div class="w-full bg-slate-100 h-1.5">
-                <div class="bg-black h-1.5" style="width: ${pct}%"></div>
+              <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5">
+                <div class="bg-black dark:bg-white h-1.5" style="width: ${pct}%"></div>
               </div>
             </div>
           `;
