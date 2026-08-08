@@ -36,6 +36,29 @@
       background-position: right 0.7rem center;
       background-size: 14px;
     }
+
+    /* "GIF bergerak" pengganti — ikon animasi ringan, tidak bergantung file luar */
+    @keyframes wiggle-ring {
+      0%, 100% { transform: rotate(0deg); }
+      15% { transform: rotate(-12deg); }
+      30% { transform: rotate(10deg); }
+      45% { transform: rotate(-8deg); }
+      60% { transform: rotate(6deg); }
+      75% { transform: rotate(-3deg); }
+    }
+    .icon-wiggle { animation: wiggle-ring 2.6s ease-in-out infinite; transform-origin: 50% 0%; }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .55; transform: scale(1.18); }
+    }
+    .icon-pulse-ring { animation: pulse-glow 1.8s ease-in-out infinite; }
+
+    @keyframes float-y {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    .icon-float { animation: float-y 2.4s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 antialiased transition-colors duration-200">
@@ -161,15 +184,27 @@
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800">
               <tr>
-                <th class="px-4 py-2 font-medium w-10 text-center">#</th>
+                <th class="px-3 py-2 font-medium w-8 text-center">#</th>
                 <th class="px-2 py-2 font-medium">Nama Staff</th>
-                <th class="px-4 py-2 font-medium text-right">Total</th>
+                <th class="px-2 py-2 font-medium text-right">Total</th>
+                <th class="px-3 py-2 font-medium text-right">Potongan</th>
               </tr>
             </thead>
             <tbody id="rankTable" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-              <tr><td colspan="3" class="p-6 text-center text-slate-400 dark:text-slate-500">Memuat ranking…</td></tr>
+              <tr><td colspan="4" class="p-6 text-center text-slate-400 dark:text-slate-500">Memuat ranking…</td></tr>
             </tbody>
           </table>
+
+          <!-- LEGENDA TIER POTONGAN -->
+          <div class="px-4 py-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-1.5">
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">0–25 AMAN</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400">26–40 · 15%</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">41–55 · 30%</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400">56–70 · 50%</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400">71–85 · 75%</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-red-700 text-white">&gt;85 · HABIS</span>
+            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.5 bg-fuchsia-600 text-white">&gt;100 CS · RP5JT</span>
+          </div>
         </div>
 
         <!-- LOAD DISTRIBUTION -->
@@ -186,11 +221,14 @@
     <!-- POIN-POIN KESALAHAN -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
       <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
-        <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Poin-Poin Kesalahan</h3>
+        <div class="flex items-center gap-2.5">
+          <span class="icon-wiggle inline-block text-lg">📋</span>
+          <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Poin-Poin Kesalahan</h3>
+        </div>
         <span id="poinCountBadge" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Poin</span>
       </div>
-      <div id="poinList" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
-        <p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center bg-white dark:bg-slate-900">Memuat daftar poin kesalahan…</p>
+      <div id="poinList" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-4">
+        <p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center">Memuat daftar poin kesalahan…</p>
       </div>
     </div>
 
@@ -201,13 +239,33 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaNA5QCG4-lli8VAnwqIE1zwF4B-TOgTk2ooTq-rR7Ur2hV4dEsmbfuLUjbp-nRpsK/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDkOoyv4-Y0pPR7lg8UuTR9mLcggs8ZP3bE2cj_LFpgo3hTFC9IjXsSV6DUJyV3Zud/exec";
 
     const DEFAULT_SITES = [
       "BANDAR80", "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BOSJOKO",
       "DEPOROS", "DINGDONTOGEL", "FATCAI", "FIATOCEL", "GENOTOTO", "GOLTOGEL",
       "HOKIJITU", "HOMETOGEL", "JUARA88", "INDRATOGEL", "JONITOGEL", "JUDOTOTO",
       "JUTAWANBET", "LAPAK99", "LATOTO"
+    ];
+
+    // Nama staff yang berperan sebagai CS — dipakai untuk aturan potongan khusus
+    // (kesalahan >100 khusus CS hanya dibagikan flat Rp5.000.000). Tambahkan nama
+    // sesuai staff CS di situs kamu (tidak case-sensitive).
+    const CS_STAFF_NAMES = [];
+
+    // Ikon berputar untuk kartu Poin-Poin Kesalahan
+    const POIN_ICONS = ["⚠️", "❌", "🕐", "📵", "💬", "🔍", "🚫", "📌", "🧾", "🗂️", "⛔", "📎"];
+
+    // Warna nama berputar untuk Ranking Kesalahan ("mencengkam" — tiap nama beda warna)
+    const NAME_COLORS_LIGHT = [
+      "text-rose-600", "text-orange-600", "text-amber-600", "text-lime-600",
+      "text-emerald-600", "text-teal-600", "text-cyan-600", "text-sky-600",
+      "text-blue-600", "text-indigo-600", "text-violet-600", "text-fuchsia-600", "text-pink-600"
+    ];
+    const NAME_COLORS_DARK = [
+      "dark:text-rose-400", "dark:text-orange-400", "dark:text-amber-400", "dark:text-lime-400",
+      "dark:text-emerald-400", "dark:text-teal-400", "dark:text-cyan-400", "dark:text-sky-400",
+      "dark:text-blue-400", "dark:text-indigo-400", "dark:text-violet-400", "dark:text-fuchsia-400", "dark:text-pink-400"
     ];
 
     let allData = [];
@@ -239,6 +297,41 @@
       document.documentElement.classList.toggle('dark', !!prefersDark);
       applyThemeButtons();
     })();
+
+    // ===== TIER POTONGAN (mengikuti Total Kesalahan) =====
+    function isCsStaff(namaStaff) {
+      var name = String(namaStaff || "").toLowerCase();
+      return CS_STAFF_NAMES.some(function (cs) { return name.indexOf(String(cs).toLowerCase()) !== -1; });
+    }
+
+    function getPenaltyTier(total, namaStaff) {
+      var t = parseInt(total, 10) || 0;
+
+      if (t > 100 && isCsStaff(namaStaff)) {
+        return { label: "CS · RP5JT", badge: "bg-fuchsia-600 text-white", bar: "bg-fuchsia-500" };
+      }
+      if (t > 85) {
+        return { label: "HABIS", badge: "bg-red-700 text-white", bar: "bg-red-700" };
+      }
+      if (t >= 71) {
+        return { label: "75%", badge: "bg-rose-600 text-white", bar: "bg-rose-600" };
+      }
+      if (t >= 56) {
+        return { label: "50%", badge: "bg-orange-600 text-white", bar: "bg-orange-500" };
+      }
+      if (t >= 41) {
+        return { label: "30%", badge: "bg-amber-500 text-white", bar: "bg-amber-500" };
+      }
+      if (t >= 26) {
+        return { label: "15%", badge: "bg-yellow-400 text-slate-900", bar: "bg-yellow-400" };
+      }
+      return { label: "AMAN", badge: "bg-emerald-500 text-white", bar: "bg-emerald-500" };
+    }
+
+    function nameColorClass(idx) {
+      var i = idx % NAME_COLORS_LIGHT.length;
+      return NAME_COLORS_LIGHT[i] + " " + NAME_COLORS_DARK[i];
+    }
 
     async function loadData() {
       try {
@@ -422,52 +515,55 @@
         `).join('');
       }
 
-      // 2. RANKING LEADERBOARD
+      // 2. RANKING LEADERBOARD — tiap nama warna berbeda + badge tier potongan
       const rankTbody = document.getElementById("rankTable");
       if (!sortedRanks || sortedRanks.length === 0) {
-        rankTbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 dark:text-slate-500">Tidak ada ranking.</td></tr>`;
+        rankTbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 dark:text-slate-500">Tidak ada ranking.</td></tr>`;
       } else {
         rankTbody.innerHTML = sortedRanks.map((item, idx) => {
-          let badge = `<span class="font-mono text-slate-400 dark:text-slate-500">${String(idx + 1).padStart(2, '0')}</span>`;
-          let rowClass = "";
+          const tier = getPenaltyTier(item.total, item.namaStaff);
+          const nameCls = nameColorClass(idx);
 
+          let numBadge = `<span class="font-mono text-slate-400 dark:text-slate-500">${String(idx + 1).padStart(2, '0')}</span>`;
+          let rowClass = "";
           if (idx === 0) {
-            badge = `<span class="font-mono font-bold text-rose-600 dark:text-rose-400">01</span>`;
-            rowClass = "bg-rose-50 dark:bg-rose-500/10 border-l-2 border-l-rose-500 dark:border-l-rose-400";
-          } else if (idx === 1) {
-            badge = `<span class="font-mono font-bold text-slate-600 dark:text-slate-300">02</span>`;
-          } else if (idx === 2) {
-            badge = `<span class="font-mono font-bold text-slate-600 dark:text-slate-300">03</span>`;
+            numBadge = `<span class="font-mono font-bold text-white bg-rose-600 w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px]">1</span>`;
+            rowClass = "bg-rose-50/70 dark:bg-rose-500/10";
           }
 
           return `
             <tr class="${rowClass} hover:bg-slate-50 dark:hover:bg-slate-800/60 transition duration-100">
-              <td class="px-4 py-2.5 text-center text-xs">${badge}</td>
-              <td class="px-2 py-2.5 font-semibold text-slate-800 dark:text-slate-100 text-xs">${item.namaStaff}</td>
-              <td class="px-4 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white text-xs">${item.total}</td>
+              <td class="px-3 py-2.5 text-center text-xs">${numBadge}</td>
+              <td class="px-2 py-2.5 font-bold text-xs ${nameCls}">${item.namaStaff}</td>
+              <td class="px-2 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white text-xs">${item.total}</td>
+              <td class="px-3 py-2.5 text-right">
+                <span class="inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 ${tier.badge}">${tier.label}</span>
+              </td>
             </tr>
           `;
         }).join('');
       }
 
-      // 3. LOAD DISTRIBUTION
+      // 3. LOAD DISTRIBUTION — warna bar mengikuti tier potongan
       const summaryList = document.getElementById("summaryList");
       const maxVal = sortedRanks.length > 0 ? parseInt(sortedRanks[0].total) || 1 : 1;
 
       if (!sortedRanks || sortedRanks.length === 0) {
         summaryList.innerHTML = `<p class="text-xs text-slate-400 dark:text-slate-500 py-4">Tidak ada data rekap.</p>`;
       } else {
-        summaryList.innerHTML = sortedRanks.slice(0, 15).map(item => {
+        summaryList.innerHTML = sortedRanks.slice(0, 15).map((item, idx) => {
           const count = parseInt(item.total) || 0;
           const pct = Math.round((count / maxVal) * 100);
+          const tier = getPenaltyTier(item.total, item.namaStaff);
+          const nameCls = nameColorClass(idx);
           return `
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
-                <span class="font-semibold text-slate-700 dark:text-slate-200">${item.namaStaff}</span>
+                <span class="font-semibold ${nameCls}">${item.namaStaff}</span>
                 <span class="font-mono font-semibold text-slate-500 dark:text-slate-400">${count}</span>
               </div>
               <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5">
-                <div class="bg-indigo-500 dark:bg-indigo-400 h-1.5" style="width: ${pct}%"></div>
+                <div class="${tier.bar} h-1.5" style="width: ${pct}%"></div>
               </div>
             </div>
           `;
@@ -475,25 +571,35 @@
       }
     }
 
-    // 4. POIN-POIN KESALAHAN (referensi kategori kesalahan dari sheet)
+    // 4. POIN-POIN KESALAHAN (referensi kategori kesalahan dari sheet, A1:C113)
     function renderPoinList() {
       const container = document.getElementById("poinList");
       document.getElementById("poinCountBadge").textContent = `${poinKesalahanData.length} Poin`;
 
       if (!poinKesalahanData || poinKesalahanData.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center bg-white dark:bg-slate-900">Belum ada data poin kesalahan.</p>`;
+        container.innerHTML = `<p class="col-span-full text-xs text-slate-400 dark:text-slate-500 py-6 text-center">Belum ada data poin kesalahan.</p>`;
         return;
       }
 
-      container.innerHTML = poinKesalahanData.map(item => `
-        <div class="bg-white dark:bg-slate-900 px-5 py-4 flex gap-3">
-          <span class="shrink-0 w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/30">${item.no}</span>
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">${item.poin}</p>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">${item.keterangan}</p>
+      const borderColors = [
+        "border-l-rose-400", "border-l-orange-400", "border-l-amber-400", "border-l-lime-400",
+        "border-l-emerald-400", "border-l-teal-400", "border-l-cyan-400", "border-l-sky-400",
+        "border-l-indigo-400", "border-l-violet-400", "border-l-fuchsia-400", "border-l-pink-400"
+      ];
+
+      container.innerHTML = poinKesalahanData.map((item, idx) => {
+        const icon = POIN_ICONS[idx % POIN_ICONS.length];
+        const border = borderColors[idx % borderColors.length];
+        return `
+          <div class="flex gap-3 p-3.5 border border-slate-200 dark:border-slate-800 border-l-4 ${border} bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <span class="icon-float shrink-0 text-lg leading-none mt-0.5">${icon}</span>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-slate-800 dark:text-slate-100">${item.poin}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">${item.keterangan}</p>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     loadData();
