@@ -40,28 +40,35 @@
 </head>
 <body class="bg-slate-100 text-slate-900 dark:bg-black dark:text-slate-100 antialiased transition-colors duration-200">
 
-  <div class="max-w-[1400px] mx-auto px-5 lg:px-8 py-6 space-y-5">
+  <div class="max-w-[1400px] mx-auto px-3 sm:px-5 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-5">
 
     <!-- MASTHEAD -->
-    <header class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 border-t-4 border-t-black dark:border-t-white px-6 py-5">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="flex items-start gap-4">
-          <button id="themeToggle" onclick="toggleTheme()" aria-label="Ganti tema"
-            class="shrink-0 w-10 h-10 flex items-center justify-center border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition">
-            <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path stroke-linecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
-            <svg id="iconMoon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
-          </button>
-          <div>
-            <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-black dark:text-white uppercase">Laporan Internal · Operasional</p>
-            <div class="flex items-baseline gap-3 mt-1">
-              <h1 id="currentSiteTitle" class="font-display text-3xl font-extrabold tracking-tight text-black dark:text-white">BANDAR80</h1>
-              <span class="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white px-2 py-0.5">
-                <span class="w-1.5 h-1.5 bg-black dark:bg-white rounded-full"></span>
-                SYNC AKTIF
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rekap kesalahan staff, diperbarui langsung dari sumber data · Sheet: KESALAHAN</p>
+    <header class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 border-t-4 border-t-black dark:border-t-white px-4 sm:px-6 py-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-mono font-semibold tracking-[0.2em] text-black dark:text-white uppercase">Laporan Internal · Operasional</p>
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1">
+            <h1 id="currentSiteTitle" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-black dark:text-white break-all">BANDAR80</h1>
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold text-black dark:text-white bg-white dark:bg-black border border-black dark:border-white px-2 py-0.5">
+              <span class="w-1.5 h-1.5 bg-black dark:bg-white rounded-full"></span>
+              SYNC AKTIF
+            </span>
           </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rekap kesalahan staff, diperbarui langsung dari sumber data · Sheet: KESALAHAN</p>
+        </div>
+
+        <!-- THEME SWITCH: Terang / Gelap -->
+        <div id="themeSwitch" class="shrink-0 inline-flex self-start sm:self-auto border border-slate-300 dark:border-slate-700 text-[11px] font-mono font-semibold overflow-hidden">
+          <button id="btnLight" onclick="setTheme(false)"
+            class="flex items-center gap-1.5 px-3 py-2 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path stroke-linecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+            TERANG
+          </button>
+          <button id="btnDark" onclick="setTheme(true)"
+            class="flex items-center gap-1.5 px-3 py-2 border-l border-slate-300 dark:border-slate-700 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+            GELAP
+          </button>
         </div>
       </div>
     </header>
@@ -96,43 +103,43 @@
     </div>
 
     <!-- KPI ROW -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Total Kesalahan</p>
-        <p id="statTotal" class="tick font-display text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-3.5 sm:px-5 py-3 sm:py-4">
+        <p class="text-[9px] sm:text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Total Kesalahan</p>
+        <p id="statTotal" class="tick font-display text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
       </div>
-      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Staff Terlibat</p>
-        <p id="statStaffCount" class="tick font-display text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-3.5 sm:px-5 py-3 sm:py-4">
+        <p class="text-[9px] sm:text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Staff Terlibat</p>
+        <p id="statStaffCount" class="tick font-display text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1.5">0</p>
       </div>
-      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4 border-l-2 border-l-black dark:border-l-white">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Kesalahan Terbanyak</p>
-        <p id="statTopStaff" class="font-display text-base font-bold text-black dark:text-white mt-1.5 truncate">-</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-3.5 sm:px-5 py-3 sm:py-4 border-l-2 border-l-black dark:border-l-white">
+        <p class="text-[9px] sm:text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Kesalahan Terbanyak</p>
+        <p id="statTopStaff" class="font-display text-sm sm:text-base font-bold text-black dark:text-white mt-1.5 truncate">-</p>
       </div>
-      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-5 py-4">
-        <p class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Filter Tanggal</p>
-        <p id="statActiveDate" class="font-display text-base font-bold text-black dark:text-white mt-1.5 truncate">SEMUA TANGGAL</p>
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 px-3.5 sm:px-5 py-3 sm:py-4">
+        <p class="text-[9px] sm:text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Filter Tanggal</p>
+        <p id="statActiveDate" class="font-display text-sm sm:text-base font-bold text-black dark:text-white mt-1.5 truncate">SEMUA TANGGAL</p>
       </div>
     </div>
 
     <!-- MAIN GRID -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-[2.4fr_1fr] gap-5">
 
       <!-- DETAIL LOG -->
-      <div class="lg:col-span-2 bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800">
-        <div class="flex justify-between items-center px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
+      <div class="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-slate-800 flex flex-col">
+        <div class="shrink-0 flex justify-between items-center px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
           <h3 class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.15em]">Detail Log Kesalahan</h3>
           <span id="recordCount" class="text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 tick">0 Data</span>
         </div>
-        <div class="overflow-x-auto max-h-[540px] overflow-y-auto">
-          <table class="w-full text-left border-collapse text-xs">
+        <div class="flex-1 min-h-[320px] sm:min-h-[420px] max-h-[640px] overflow-x-auto overflow-y-auto">
+          <table class="w-full min-w-[720px] text-left border-collapse text-xs">
             <thead class="sticky top-0 bg-white dark:bg-[#0A0A0A] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono font-semibold border-b border-slate-200 dark:border-slate-800 z-10">
               <tr>
-                <th class="px-5 py-2.5 font-medium">Nama Staff</th>
-                <th class="px-3 py-2.5 font-medium">Tanggal</th>
-                <th class="px-3 py-2.5 font-medium">Keterangan</th>
-                <th class="px-3 py-2.5 font-medium">Kode ID</th>
-                <th class="px-5 py-2.5 font-medium text-center">Bukti</th>
+                <th class="px-5 py-2.5 font-medium whitespace-nowrap">Nama Staff</th>
+                <th class="px-3 py-2.5 font-medium whitespace-nowrap">Tanggal</th>
+                <th class="px-3 py-2.5 font-medium whitespace-nowrap">Keterangan</th>
+                <th class="px-3 py-2.5 font-medium whitespace-nowrap">Kode ID</th>
+                <th class="px-5 py-2.5 font-medium text-center whitespace-nowrap">Bukti</th>
               </tr>
             </thead>
             <tbody id="detailTable" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
@@ -183,7 +190,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJAQgxkmkaWAycGzBT5MlL_9xVYieN0rSZcZeOZZLtXG7po0LATWNTmNCSr97V06Xw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWpbioinHGE64Q8Z1a34W6JztHZjvZBGEn70CYZht0zVvomQCP2nQnTdMq8VW2RUD0/exec";
 
     const DEFAULT_SITES = [
       "BANDAR80", "PULITOTO", "ZIATOGEL", "DANATOTO", "INDRABET", "ANGKARET", "BOSJOKO",
@@ -198,19 +205,27 @@
     let listOfSites = [];
 
     // ===== THEME (gelap/terang) =====
-    function applyThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.getElementById('iconSun').classList.toggle('hidden', !isDark);
-      document.getElementById('iconMoon').classList.toggle('hidden', isDark);
+    function applyThemeButtons() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var btnLight = document.getElementById('btnLight');
+      var btnDark = document.getElementById('btnDark');
+
+      var activeCls = "flex items-center gap-1.5 px-3 py-2 transition bg-black text-white dark:bg-white dark:text-black";
+      var activeClsDark = "flex items-center gap-1.5 px-3 py-2 border-l border-slate-300 dark:border-slate-700 transition bg-black text-white dark:bg-white dark:text-black";
+      var idleCls = "flex items-center gap-1.5 px-3 py-2 transition text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900";
+      var idleClsDark = "flex items-center gap-1.5 px-3 py-2 border-l border-slate-300 dark:border-slate-700 transition text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900";
+
+      btnLight.className = isDark ? idleCls : activeCls;
+      btnDark.className = isDark ? activeClsDark : idleClsDark;
     }
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-      applyThemeIcons();
+    function setTheme(isDark) {
+      document.documentElement.classList.toggle('dark', isDark);
+      applyThemeButtons();
     }
     (function initTheme() {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) document.documentElement.classList.add('dark');
-      applyThemeIcons();
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', !!prefersDark);
+      applyThemeButtons();
     })();
 
     async function loadData() {
@@ -278,7 +293,7 @@
 
       container.innerHTML = sites.map(site => `
         <button id="btn-${site.replace(/\s+/g, '-')}" onclick="selectSite('${site}')"
-          class="site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100">
+          class="site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100">
           ${site}
         </button>
       `).join('');
@@ -287,12 +302,12 @@
     function renderSiteButtonStyles(activeSite) {
       const allButtons = document.querySelectorAll(".site-tab");
       allButtons.forEach(btn => {
-        btn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100";
+        btn.className = "site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-semibold tracking-wide border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100";
       });
 
       const activeBtn = document.getElementById(`btn-${activeSite.replace(/\s+/g, '-')}`);
       if (activeBtn) {
-        activeBtn.className = "site-tab shrink-0 px-3.5 py-1.5 text-[11px] font-mono font-bold tracking-wide border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black";
+        activeBtn.className = "site-tab shrink-0 px-3.5 py-2 text-[11px] font-mono font-bold tracking-wide border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black";
       }
     }
 
@@ -395,7 +410,7 @@
               ${row.link && row.link !== '#' && row.link !== ''
                 ? `<a href="${row.link}" target="_blank" rel="noopener noreferrer"
                      class="inline-flex items-center px-2.5 py-1 text-[10px] font-mono font-semibold text-black dark:text-white border border-black dark:border-white bg-white dark:bg-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition">
-                     LIHAT ↗
+                     KLIK INI ↗
                    </a>`
                 : `<span class="text-slate-300 dark:text-slate-600 font-semibold">-</span>`}
             </td>
